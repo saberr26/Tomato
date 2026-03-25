@@ -101,10 +101,7 @@ class TimerAppWidget : GlanceAppWidget(), KoinComponent {
                     contentAlignment = Alignment.Center,
                     modifier = GlanceModifier
                         .size(circleSize)
-                        .background(
-                            ImageProvider(R.drawable.rounded_full),
-                            colorFilter = ColorFilter.tint(colors.widgetBackground)
-                        )
+                        .background(Color.Transparent)
                 ) {
                     val clockHeight = (circleSize.value * 0.25f)
                     if (timerState.alarmRinging) {
