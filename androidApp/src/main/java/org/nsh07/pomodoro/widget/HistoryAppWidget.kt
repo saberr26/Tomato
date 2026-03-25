@@ -105,7 +105,7 @@ class HistoryAppWidget : GlanceAppWidget(), KoinComponent {
                 GlanceModifier
                     .fillMaxSize()
                     .then(
-                        if (roundedCornersSupported) GlanceModifier.background(colors.widgetBackground)
+                        if (roundedCornersSupported) GlanceModifier.background(Color.Transparent)
                         else GlanceModifier.background(
                             ImageProvider(R.drawable.rounded_24dp),
                             colorFilter = ColorFilter.tint(colors.widgetBackground)
