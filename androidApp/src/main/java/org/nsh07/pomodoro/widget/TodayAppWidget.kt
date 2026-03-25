@@ -104,7 +104,7 @@ class TodayAppWidget : GlanceAppWidget(), KoinComponent {
             contentAlignment = Alignment.TopEnd,
             modifier = GlanceModifier
                 .then(
-                    if (Build.VERSION.SDK_INT >= 31) GlanceModifier.background(colors.widgetBackground)
+                    if (Build.VERSION.SDK_INT >= 31) GlanceModifier.background(Color.Transparent)
                     else GlanceModifier.background(
                         ImageProvider(R.drawable.rounded_24dp),
                         colorFilter = ColorFilter.tint(colors.widgetBackground)
