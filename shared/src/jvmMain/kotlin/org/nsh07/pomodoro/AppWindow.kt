@@ -27,9 +27,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
+import androidx.compose.ui.window.isTraySupported
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import kotlinx.coroutines.flow.update
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -49,45 +51,52 @@ fun ApplicationScope.AppWindow(
     stateRepository: StateRepository = koinInject()
 ) {
     val windowState: WindowState = koinInject()
+    val windowVisible by stateRepository.windowVisible.collectAsState()
 
-    Window(
-        state = windowState,
-        onCloseRequest = ::exitApplication,
-        title = stringResource(Res.string.app_name),
-        icon = painterResource(Res.drawable.logo)
+    val windowViewModelStoreOwner = remember {
+        object : ViewModelStoreOwner {
+            override val viewModelStore = ViewModelStore()
+        }
+    }
+
+    CompositionLocalProvider(
+        LocalViewModelStoreOwner provides windowViewModelStoreOwner
     ) {
-        val settingsState by settingsViewModel.settingsState.collectAsState()
-        val isPlus by settingsViewModel.isPlus.collectAsState()
-
-        val windowViewModelStoreOwner = remember {
-            object : ViewModelStoreOwner {
-                override val viewModelStore = ViewModelStore()
-            }
+        if (isTraySupported) {
+            AppSystemTray()
         }
 
-        CompositionLocalProvider(
-            LocalViewModelStoreOwner provides windowViewModelStoreOwner
-        ) {
-            val darkTheme = when (settingsState.theme) {
-                "dark" -> true
-                "light" -> false
-                else -> isSystemInDarkTheme()
-            }
-
-            val seed = settingsState.colorScheme.toColor()
-
-            TomatoTheme(
-                darkTheme = darkTheme,
-                seedColor = seed,
-                blackTheme = settingsState.blackTheme
+        if (windowVisible) {
+            Window(
+                state = windowState,
+                onCloseRequest = { stateRepository.windowVisible.update { false } },
+                title = stringResource(Res.string.app_name),
+                icon = painterResource(Res.drawable.logo)
             ) {
-                AppScreen(
-                    isAODEnabled = settingsState.aodEnabled,
-                    isPlus = isPlus,
-                    setTimerFrequency = {
-                        stateRepository.timerFrequency = it
-                    }
-                )
+                val settingsState by settingsViewModel.settingsState.collectAsState()
+                val isPlus by settingsViewModel.isPlus.collectAsState()
+
+                val darkTheme = when (settingsState.theme) {
+                    "dark" -> true
+                    "light" -> false
+                    else -> isSystemInDarkTheme()
+                }
+
+                val seed = settingsState.colorScheme.toColor()
+
+                TomatoTheme(
+                    darkTheme = darkTheme,
+                    seedColor = seed,
+                    blackTheme = settingsState.blackTheme
+                ) {
+                    AppScreen(
+                        isAODEnabled = settingsState.aodEnabled,
+                        isPlus = isPlus,
+                        setTimerFrequency = {
+                            stateRepository.timerFrequency = it
+                        }
+                    )
+                }
             }
         }
     }
