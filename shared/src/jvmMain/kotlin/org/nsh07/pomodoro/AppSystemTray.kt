@@ -48,6 +48,7 @@ import tomato.shared.generated.resources.short_break
 import tomato.shared.generated.resources.skip
 import tomato.shared.generated.resources.start
 import tomato.shared.generated.resources.stop
+import tomato.shared.generated.resources.stop_alarm
 import tomato.shared.generated.resources.tomato_logo_notification
 import kotlin.text.Typography.middleDot
 
@@ -66,6 +67,7 @@ fun ApplicationScope.AppSystemTray(
     val startString = stringResource(Res.string.start)
     val restartString = stringResource(Res.string.restart)
     val skipString = stringResource(Res.string.skip)
+    val stopAlarmString = stringResource(Res.string.stop_alarm)
 
     val timerModeStr = when (timerState.timerMode) {
         TimerMode.SHORT_BREAK -> stringResource(Res.string.short_break)
@@ -88,19 +90,23 @@ fun ApplicationScope.AppSystemTray(
         tooltip = stringResource(Res.string.app_name),
         primaryAction = { stateRepository.windowVisible.update { true } }
     ) {
-        SubMenu(
-            "$timerModeStr $middleDot ${
-                if (timerState.timerMode == TimerMode.FOCUS && timerState.infiniteFocus) infiniteString
-                else remainingTimeStr
-            }" + if (!timerState.timerRunning) " $middleDot $pausedString" else ""
-        ) {
-            Item(if (timerState.timerRunning) stopString else startString) {
-                timerViewModel.onAction(
-                    TimerAction.ToggleTimer
-                )
+        if (!timerState.alarmRinging) {
+            SubMenu(
+                "$timerModeStr $middleDot ${
+                    if (timerState.timerMode == TimerMode.FOCUS && timerState.infiniteFocus) infiniteString
+                    else remainingTimeStr
+                }" + if (!timerState.timerRunning) " $middleDot $pausedString" else ""
+            ) {
+                Item(if (timerState.timerRunning) stopString else startString) {
+                    timerViewModel.onAction(
+                        TimerAction.ToggleTimer
+                    )
+                }
+                Item(restartString) { timerViewModel.onAction(TimerAction.ResetTimer) }
+                Item(skipString) { timerViewModel.onAction(TimerAction.SkipTimer(true)) }
             }
-            Item(restartString) { timerViewModel.onAction(TimerAction.ResetTimer) }
-            Item(skipString) { timerViewModel.onAction(TimerAction.SkipTimer(true)) }
+        } else {
+            Item(stopAlarmString) { timerViewModel.onAction(TimerAction.StopAlarm) }
         }
         Divider()
         Item(openTomato) { stateRepository.windowVisible.update { true } }
