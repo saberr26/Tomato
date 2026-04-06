@@ -84,6 +84,8 @@
     <string name="more_info">More info</string>
     <string name="now_bar">Now Bar</string>
     <string name="ok">OK</string>
+    <string name="open_tomato">Open Tomato</string>
+    <string name="quit_tomato">Quit Tomato</string>
     <string name="pause">Pause</string>
     <string name="paused">Paused</string>
     <string name="play">Play</string>

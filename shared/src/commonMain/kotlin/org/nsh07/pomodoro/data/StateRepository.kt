@@ -40,6 +40,8 @@ class StateRepository(private val preferenceRepository: PreferenceRepository) {
     var timerStateSnapshot: TimerStateSnapshot =
         TimerStateSnapshot(time = 0, timerState = TimerState())
 
+    val windowVisible = MutableStateFlow(true) // Used on desktop
+
     private var isFirstLoad = true
 
     init {
