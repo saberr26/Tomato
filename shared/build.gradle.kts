@@ -110,7 +110,9 @@ kotlin {
             implementation(libs.filekit.core)
             implementation(libs.filekit.dialogs.compose)
 
-            implementation(libs.composenativetray)
+            implementation(libs.composenativetray) // tray icons
+
+            implementation(libs.jlayer.player) // MP3 playback
         }
     }
 }
