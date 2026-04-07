@@ -144,4 +144,6 @@
     <string name="infinite_focus">Nekonečné soutředění</string>
     <string name="settings_infinite_focus_tip">Dlouze podržte prst na časovači pro zapnutí nekonečného režimu soustředění</string>
     <string name="cancel">Zrušit</string>
+    <string name="open_tomato">Otevřít Tomato</string>
+    <string name="quit_tomato">Ukončit Tomato</string>
 </resources>

@@ -145,4 +145,6 @@
     <string name="settings_infinite_focus_tip">اضغط مطول على ساعة المؤقت لتفعيل وضع التركيز اللامتناهي</string>
     <string name="infinite">اللامتناهي</string>
     <string name="cancel">ألغِ</string>
+    <string name="open_tomato">افتح Tomato</string>
+    <string name="quit_tomato">اخرِج Tomato</string>
 </resources>
