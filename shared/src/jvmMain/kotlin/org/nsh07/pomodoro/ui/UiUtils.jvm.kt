@@ -29,6 +29,7 @@ import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowState
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.PlatformFile
+import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.openFilePicker
 import io.github.vinceglb.filekit.name
 import io.github.vinceglb.filekit.parent
@@ -78,11 +79,12 @@ actual fun rememberRingtonePickerLauncherCallback(
 ): suspend () -> Unit = {
     // TODO: copy the file to the data directory and use its path instead, to avoid dependence on a file that the user may delete
     val file = FileKit.openFilePicker(
+        type = FileKitType.File("mp3"),
         directory = alarmSoundFilePath?.let {
             PlatformFile(it).parent()
         }
     )
-    onResult(SettingsAction.SaveAlarmSound(file?.path))
+    file?.let { onResult(SettingsAction.SaveAlarmSound(it.path)) }
 }
 
 @Composable

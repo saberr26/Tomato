@@ -33,8 +33,6 @@ class DesktopTimerHelper(
     private val timerManager: TimerManager,
     private val stateRepository: StateRepository
 ) : TimerHelper {
-    // TODO: Implement DesktopTimerHelper
-
     private var job = SupervisorJob()
     private val timerScope = CoroutineScope(Dispatchers.IO + job)
     private val skipScope = CoroutineScope(Dispatchers.IO + job)
