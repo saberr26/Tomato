@@ -28,7 +28,7 @@ import org.nsh07.pomodoro.data.FileLocator
 @Composable
 actual fun rememberDirectoryPickerLauncher(onResult: (FileLocator) -> Unit): suspend () -> Unit = {
     val folder = FileKit.openDirectoryPicker()
-    onResult(FileLocator(folder?.path))
+    folder?.let { onResult(FileLocator(it.path)) }
 }
 
 @Composable
@@ -40,5 +40,5 @@ actual fun rememberFilePickerLauncher(
     val file = FileKit.openFilePicker(
         fileExtension?.let { FileKitType.File(it) } ?: FileKitType.File()
     )
-    onResult(FileLocator(file?.path))
+    file?.let { onResult(FileLocator(it.path)) }
 }

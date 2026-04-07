@@ -33,8 +33,6 @@ class DesktopTimerHelper(
     private val timerManager: TimerManager,
     private val stateRepository: StateRepository
 ) : TimerHelper {
-    // TODO: Implement DesktopTimerHelper
-
     private var job = SupervisorJob()
     private val timerScope = CoroutineScope(Dispatchers.IO + job)
     private val skipScope = CoroutineScope(Dispatchers.IO + job)
@@ -43,6 +41,8 @@ class DesktopTimerHelper(
 
     private val _timerState by lazy { stateRepository.timerState }
     private val _settingsState by lazy { stateRepository.settingsState }
+
+    private var mp3Player: MP3Player = MP3Player(null)
 
     override fun onAction(action: TimerAction) {
         if (action == TimerAction.ResetTimer)
@@ -110,10 +110,15 @@ class DesktopTimerHelper(
         }
     }
 
-    // TODO: play sound when alarm is triggered
     private fun startAlarm() {
-//        val settingsState = _settingsState.value
-//        if (settingsState.alarmEnabled) alarm?.start()
+        val settingsState = _settingsState.value
+        if (mp3Player.audioPath != settingsState.alarmSoundUri) {
+            // if the alarm file is changed in settings, recreate the MP3Player
+            mp3Player.release()
+            mp3Player = MP3Player(settingsState.alarmSoundUri)
+        }
+
+        if (settingsState.alarmEnabled) mp3Player.play()
 
         autoAlarmStopScope = CoroutineScope(Dispatchers.IO).launch {
             delay(1 * 60 * 1000)
@@ -125,15 +130,10 @@ class DesktopTimerHelper(
         val settingsState = _settingsState.value
         autoAlarmStopScope?.cancel()
 
-//        if (settingsState.alarmEnabled) {
-//            alarm?.pause()
-//            alarm?.seekTo(0)
-//        }
-//
-//        if (settingsState.vibrateEnabled) {
-//            vibrator.cancel()
-//        }
-//
+        if (settingsState.alarmEnabled) {
+            mp3Player.stop()
+        }
+
 //        activityCallbacks.activityTurnScreenOn(false)
 
         _timerState.update { currentState ->
