@@ -22,13 +22,22 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileInputStream
 
-class MP3Player(private val audioFile: File) {
+/**
+ * This class, well, plays MP3 files
+ *
+ * Note: please call [release] when you are done with an instance of this class
+ *
+ * @param audioPath The path to the MP3 file to play
+ */
+class MP3Player(val audioPath: String?) {
 
+    private val audioFile = audioPath?.let { File(it) }
     private var player: Player? = null
     private var playJob: Job? = null
 
@@ -45,11 +54,13 @@ class MP3Player(private val audioFile: File) {
 
         playJob = audioScope.launch {
             try {
-                val fileInputStream = FileInputStream(audioFile)
-                val bufferedInputStream = BufferedInputStream(fileInputStream)
+                audioFile?.let {
+                    val fileInputStream = FileInputStream(audioFile)
+                    val bufferedInputStream = BufferedInputStream(fileInputStream)
 
-                player = Player(bufferedInputStream)
-                player?.play()
+                    player = Player(bufferedInputStream)
+                    player?.play()
+                }
             } catch (e: Exception) {
                 println("Playback stopped or encountered an error: ${e.message}")
             } finally {
@@ -59,7 +70,7 @@ class MP3Player(private val audioFile: File) {
     }
 
     /**
-     * Stops playback and resets state for the next "seek to 0" play.
+     * Stops playback and effectively seeks to 0
      */
     fun stop() {
         if (isPlaying) {
@@ -72,5 +83,10 @@ class MP3Player(private val audioFile: File) {
     private fun reset() {
         player = null
         playJob = null
+    }
+
+    fun release() {
+        stop()
+        audioScope.cancel()
     }
 }

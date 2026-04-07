@@ -28,7 +28,6 @@ import org.nsh07.pomodoro.data.StateRepository
 import org.nsh07.pomodoro.service.TimerHelper
 import org.nsh07.pomodoro.service.TimerManager
 import org.nsh07.pomodoro.ui.timerScreen.viewModel.TimerAction
-import java.io.File
 
 class DesktopTimerHelper(
     private val timerManager: TimerManager,
@@ -45,11 +44,7 @@ class DesktopTimerHelper(
     private val _timerState by lazy { stateRepository.timerState }
     private val _settingsState by lazy { stateRepository.settingsState }
 
-    private val mp3Player by lazy {
-        _settingsState.value.alarmSoundUri?.let {
-            MP3Player(File(it))
-        }
-    }
+    private var mp3Player: MP3Player = MP3Player(null)
 
     override fun onAction(action: TimerAction) {
         if (action == TimerAction.ResetTimer)
@@ -119,7 +114,13 @@ class DesktopTimerHelper(
 
     private fun startAlarm() {
         val settingsState = _settingsState.value
-        if (settingsState.alarmEnabled) mp3Player?.play()
+        if (mp3Player.audioPath != settingsState.alarmSoundUri) {
+            // if the alarm file is changed in settings, recreate the MP3Player
+            mp3Player.release()
+            mp3Player = MP3Player(settingsState.alarmSoundUri)
+        }
+
+        if (settingsState.alarmEnabled) mp3Player.play()
 
         autoAlarmStopScope = CoroutineScope(Dispatchers.IO).launch {
             delay(1 * 60 * 1000)
@@ -132,7 +133,7 @@ class DesktopTimerHelper(
         autoAlarmStopScope?.cancel()
 
         if (settingsState.alarmEnabled) {
-            mp3Player?.stop()
+            mp3Player.stop()
         }
 
 //        activityCallbacks.activityTurnScreenOn(false)
