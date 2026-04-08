@@ -40,8 +40,6 @@ compose.resources {
 }
 
 kotlin {
-    compilerOptions.freeCompilerArgs.add("-Xexpect-actual-classes")
-
     android {
         namespace = "org.nsh07.pomodoro.shared"
         compileSdk = libs.versions.app.targetSdk.get().toInt()
@@ -84,8 +82,7 @@ kotlin {
             implementation(libs.vico.compose.m3)
             implementation(libs.material.kolor)
 
-            implementation(libs.filekit.core)
-            implementation(libs.filekit.dialogs.compose)
+            implementation(libs.filekit.core) // file handling
         }
 
         androidMain.dependencies {
@@ -109,6 +106,8 @@ kotlin {
 
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.androidx.sqlite.bundled)
+
+            implementation(libs.filekit.dialogs.compose)
 
             implementation(libs.composenativetray) // tray icons
 
