@@ -83,6 +83,9 @@ kotlin {
 
             implementation(libs.vico.compose.m3)
             implementation(libs.material.kolor)
+
+            implementation(libs.filekit.core)
+            implementation(libs.filekit.dialogs.compose)
         }
 
         androidMain.dependencies {
@@ -106,9 +109,6 @@ kotlin {
 
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.androidx.sqlite.bundled)
-
-            implementation(libs.filekit.core)
-            implementation(libs.filekit.dialogs.compose)
 
             implementation(libs.composenativetray) // tray icons
 

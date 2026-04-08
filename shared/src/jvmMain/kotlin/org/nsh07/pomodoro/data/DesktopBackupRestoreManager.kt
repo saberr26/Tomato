@@ -19,6 +19,7 @@ package org.nsh07.pomodoro.data
 
 import androidx.room.RoomRawQuery
 import io.github.vinceglb.filekit.FileKit
+import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.databasesDir
 import io.github.vinceglb.filekit.path
 import kotlinx.coroutines.Dispatchers
@@ -28,31 +29,24 @@ import java.io.File
 import kotlin.system.exitProcess
 import kotlin.time.Clock
 
-actual class FileLocator(actual val path: String?) {
-    actual constructor() : this(null)
-
-    actual val isNull: Boolean
-        get() = path == null
-}
-
 class DesktopBackupRestoreManager(
     private val database: AppDatabase,
     private val systemDao: SystemDao
 ) : BackupRestoreManager {
-    override suspend fun performBackup(directoryLocator: FileLocator) {
+    override suspend fun performBackup(directory: PlatformFile) {
         withContext(Dispatchers.IO) {
             systemDao.checkpoint(RoomRawQuery("PRAGMA wal_checkpoint(full)"))
 
             val dbName = BuildKonfig.DATABASE_NAME
             val dbFile = File(FileKit.databasesDir.path, dbName)
 
-            val outputFile = File(directoryLocator.path!!, "tomato-backup-${Clock.System.now()}.db")
+            val outputFile = File(directory.path, "tomato-backup-${Clock.System.now()}.db")
             dbFile.copyTo(outputFile, overwrite = true)
         }
     }
 
-    override suspend fun performRestore(fileLocator: FileLocator) {
-        if (fileLocator.isNull) return
+    override suspend fun performRestore(file: PlatformFile?) {
+        if (file == null) return
         withContext(Dispatchers.IO) {
             database.close()
 
@@ -64,7 +58,7 @@ class DesktopBackupRestoreManager(
             File("${dbFile.path}-wal").delete()
             File("${dbFile.path}-shm").delete()
 
-            val inputFile = File(fileLocator.path!!)
+            val inputFile = File(file.path)
             inputFile.copyTo(dbFile, overwrite = true)
         }
     }
@@ -73,7 +67,7 @@ class DesktopBackupRestoreManager(
         try {
             val processInfo = ProcessHandle.current().info()
             val command = processInfo.command().orElse(null)
-            val arguments = processInfo.arguments().orElse(emptyArray())
+            val arguments = processInfo.arguments().orElse(emptyArray()) ?: emptyArray()
 
             if (command != null) {
                 val commandList = mutableListOf<String>()

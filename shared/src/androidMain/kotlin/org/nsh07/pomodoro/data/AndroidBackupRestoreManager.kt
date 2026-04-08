@@ -19,9 +19,10 @@ package org.nsh07.pomodoro.data
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.provider.DocumentsContract
 import androidx.room.RoomRawQuery
+import io.github.vinceglb.filekit.PlatformFile
+import io.github.vinceglb.filekit.dialogs.toAndroidUri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.nsh07.pomodoro.BuildKonfig
@@ -30,31 +31,21 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import kotlin.time.Clock
 
-actual data class FileLocator(val uri: Uri?) {
-    actual constructor() : this(null)
-
-    actual val path: String?
-        get() = uri?.path
-
-    actual val isNull: Boolean
-        get() = uri == null
-}
-
 class AndroidBackupRestoreManager(
     private val database: AppDatabase,
     private val systemDao: SystemDao,
     private val context: Context
 ) : BackupRestoreManager {
-    override suspend fun performBackup(directoryLocator: FileLocator) {
+    override suspend fun performBackup(directory: PlatformFile) {
         withContext(Dispatchers.IO) {
             systemDao.checkpoint(RoomRawQuery("PRAGMA wal_checkpoint(full)"))
 
             val dbName = BuildKonfig.DATABASE_NAME
             val dbFile = context.getDatabasePath(dbName)
 
-            val documentId = DocumentsContract.getTreeDocumentId(directoryLocator.uri)
+            val documentId = DocumentsContract.getTreeDocumentId(directory.toAndroidUri())
             val parentDocumentUri =
-                DocumentsContract.buildDocumentUriUsingTree(directoryLocator.uri, documentId)
+                DocumentsContract.buildDocumentUriUsingTree(directory.toAndroidUri(), documentId)
 
             val fileUri = DocumentsContract.createDocument(
                 context.contentResolver,
@@ -73,8 +64,8 @@ class AndroidBackupRestoreManager(
         }
     }
 
-    override suspend fun performRestore(fileLocator: FileLocator) {
-        if (fileLocator.isNull) return
+    override suspend fun performRestore(file: PlatformFile?) {
+        if (file == null) return
         withContext(Dispatchers.IO) {
             database.close()
 
@@ -86,7 +77,7 @@ class AndroidBackupRestoreManager(
             File("${dbFile.path}-wal").delete()
             File("${dbFile.path}-shm").delete()
 
-            context.contentResolver.openInputStream(fileLocator.uri!!)?.use { input ->
+            context.contentResolver.openInputStream(file.toAndroidUri())?.use { input ->
                 FileOutputStream(dbFile).use { output ->
                     input.copyTo(output)
                 }

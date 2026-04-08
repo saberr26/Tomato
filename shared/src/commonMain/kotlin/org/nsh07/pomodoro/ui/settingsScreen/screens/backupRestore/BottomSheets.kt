@@ -27,10 +27,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.nsh07.pomodoro.data.FileLocator
 import org.nsh07.pomodoro.ui.htmlToAnnotatedString
 import org.nsh07.pomodoro.ui.settingsScreen.screens.backupRestore.viewModel.BackupRestoreState
 import org.nsh07.pomodoro.ui.theme.TomatoTheme
@@ -53,14 +53,14 @@ import kotlin.text.Typography.nbsp
 fun BackupBottomSheet(
     backupState: BackupRestoreState,
     onDismissRequest: () -> Unit,
-    onStartBackup: (FileLocator) -> Unit,
+    onStartBackup: (PlatformFile) -> Unit,
     resetBackupState: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var selectedFileLocator: FileLocator by remember { mutableStateOf(FileLocator()) }
+    var selectedFile: PlatformFile? by remember { mutableStateOf(null) }
 
-    val launchDirectoryPicker = rememberDirectoryPickerLauncher { fileLocator ->
-        selectedFileLocator = fileLocator
+    val launchDirectoryPicker = rememberDirectoryPickerLauncher { file ->
+        selectedFile = file
         resetBackupState()
     }
 
@@ -87,9 +87,9 @@ fun BackupBottomSheet(
             )
         ),
         buttonText = if (backupState == BackupRestoreState.DONE) stringResource(Res.string.exit)
-        else if (selectedFileLocator.isNull) stringResource(Res.string.choose_folder)
+        else if (selectedFile == null) stringResource(Res.string.choose_folder)
         else stringResource(Res.string.backup),
-        selectedFileLocator = selectedFileLocator,
+        selectedFile = selectedFile,
         modifier = modifier
     )
 }
@@ -98,14 +98,14 @@ fun BackupBottomSheet(
 fun RestoreBottomSheet(
     restoreState: BackupRestoreState,
     onDismissRequest: () -> Unit,
-    onStartRestore: (FileLocator) -> Unit,
+    onStartRestore: (PlatformFile) -> Unit,
     resetRestoreState: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var selectedFileLocator: FileLocator by remember { mutableStateOf(FileLocator()) }
+    var selectedFile: PlatformFile? by remember { mutableStateOf(null) }
 
-    val launchFilePicker = rememberFilePickerLauncher("application/octet-stream", "db") { locator ->
-        selectedFileLocator = locator
+    val launchFilePicker = rememberFilePickerLauncher("application/octet-stream", "db") { file ->
+        selectedFile = file
         resetRestoreState()
     }
 
@@ -125,9 +125,9 @@ fun RestoreBottomSheet(
         titleText = stringResource(Res.string.restore),
         labelText = htmlToAnnotatedString(stringResource(Res.string.restore_dialog_desc)),
         buttonText = if (restoreState == BackupRestoreState.DONE) stringResource(Res.string.restart_app)
-        else if (selectedFileLocator.isNull) stringResource(Res.string.choose_file)
+        else if (selectedFile == null) stringResource(Res.string.choose_file)
         else stringResource(Res.string.restore),
-        selectedFileLocator = selectedFileLocator,
+        selectedFile = selectedFile,
         modifier = modifier
     )
 }

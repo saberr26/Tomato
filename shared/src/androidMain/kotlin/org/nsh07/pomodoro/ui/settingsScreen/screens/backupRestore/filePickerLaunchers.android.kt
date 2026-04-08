@@ -20,16 +20,16 @@ package org.nsh07.pomodoro.ui.settingsScreen.screens.backupRestore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
-import org.nsh07.pomodoro.data.FileLocator
+import io.github.vinceglb.filekit.PlatformFile
 
 @Composable
 actual fun rememberDirectoryPickerLauncher(
-    onResult: (FileLocator) -> Unit
+    onResult: (PlatformFile) -> Unit
 ): suspend () -> Unit {
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocumentTree()
     ) { uri ->
-        onResult(FileLocator(uri))
+        uri?.let { onResult(PlatformFile(it)) }
     }
     return { launcher.launch(null) }
 }
@@ -38,12 +38,12 @@ actual fun rememberDirectoryPickerLauncher(
 actual fun rememberFilePickerLauncher(
     mimeType: String,
     fileExtension: String?,
-    onResult: (FileLocator) -> Unit
+    onResult: (PlatformFile) -> Unit
 ): suspend () -> Unit {
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
     ) { uri ->
-        onResult(FileLocator(uri))
+        uri?.let { onResult(PlatformFile(uri)) }
     }
     return { launcher.launch(arrayOf(mimeType)) }
 }
