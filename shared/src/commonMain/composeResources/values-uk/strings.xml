@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~ Copyright (c) 2026 Nishant Mishra
   ~
   ~ This file is part of Tomato - a minimalist pomodoro timer for Android.
@@ -13,8 +14,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License along with Tomato.
   ~ If not, see <https://www.gnu.org/licenses/>.
-  -->
-<resources>
+  --><resources>
     <string name="start">Почати</string>
     <string name="stop">Стоп</string>
     <string name="focus">Фокус</string>
@@ -146,4 +146,6 @@
     <string name="infinite_focus">Нескінченний фокус</string>
     <string name="settings_infinite_focus_tip">Натисніть і утримуйте кнопку таймера, щоб увімкнути режим нескінченного фокусу</string>
     <string name="cancel">Скасувати</string>
+    <string name="open_tomato">Відкрити Tomato</string>
+    <string name="quit_tomato">Вийти з Tomato</string>
 </resources>
