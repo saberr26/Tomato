@@ -17,15 +17,21 @@
 
 package org.nsh07.pomodoro
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.isTraySupported
 import androidx.lifecycle.ViewModelStore
@@ -59,6 +65,8 @@ fun ApplicationScope.AppWindow(
         }
     }
 
+    val onClose = { stateRepository.windowVisible.update { false } }
+
     CompositionLocalProvider(
         LocalViewModelStoreOwner provides windowViewModelStoreOwner
     ) {
@@ -69,9 +77,11 @@ fun ApplicationScope.AppWindow(
         if (windowVisible) {
             Window(
                 state = windowState,
-                onCloseRequest = { stateRepository.windowVisible.update { false } },
+                onCloseRequest = onClose,
                 title = stringResource(Res.string.app_name),
-                icon = painterResource(Res.drawable.logo)
+                icon = painterResource(Res.drawable.logo),
+                undecorated = true,
+                alwaysOnTop = BuildKonfig.DEBUG
             ) {
                 val settingsState by settingsViewModel.settingsState.collectAsState()
                 val isPlus by settingsViewModel.isPlus.collectAsState()
@@ -89,13 +99,29 @@ fun ApplicationScope.AppWindow(
                     seedColor = seed,
                     blackTheme = settingsState.blackTheme
                 ) {
-                    AppScreen(
-                        isAODEnabled = settingsState.aodEnabled,
-                        isPlus = isPlus,
-                        setTimerFrequency = {
-                            stateRepository.timerFrequency = it
+                    Column(Modifier.background(colorScheme.surface)) {
+                        AnimatedVisibility(windowState.placement != WindowPlacement.Fullscreen) {
+                            AppTitleBar(
+                                windowFloating = windowState.placement == WindowPlacement.Floating,
+                                onBack = {},
+                                onMinimize = { windowState.isMinimized = true },
+                                onMaximizeRestore = {
+                                    if (windowState.placement == WindowPlacement.Floating)
+                                        windowState.placement = WindowPlacement.Maximized
+                                    else windowState.placement = WindowPlacement.Floating
+                                },
+                                onClose = onClose
+                            )
                         }
-                    )
+
+                        AppScreen(
+                            isAODEnabled = settingsState.aodEnabled,
+                            isPlus = isPlus,
+                            setTimerFrequency = {
+                                stateRepository.timerFrequency = it
+                            },
+                        )
+                    }
                 }
             }
         }
