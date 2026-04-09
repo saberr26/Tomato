@@ -65,8 +65,6 @@ fun ApplicationScope.AppWindow(
         }
     }
 
-    val onClose = { stateRepository.windowVisible.update { false } }
-
     CompositionLocalProvider(
         LocalViewModelStoreOwner provides windowViewModelStoreOwner
     ) {
@@ -77,7 +75,7 @@ fun ApplicationScope.AppWindow(
         if (windowVisible) {
             Window(
                 state = windowState,
-                onCloseRequest = onClose,
+                onCloseRequest = { stateRepository.windowVisible.update { false } },
                 title = stringResource(Res.string.app_name),
                 icon = painterResource(Res.drawable.logo),
                 undecorated = true,
@@ -110,7 +108,7 @@ fun ApplicationScope.AppWindow(
                                         windowState.placement = WindowPlacement.Maximized
                                     else windowState.placement = WindowPlacement.Floating
                                 },
-                                onClose = onClose
+                                onClose = { stateRepository.windowVisible.update { false } }
                             )
                         }
 
