@@ -66,9 +66,7 @@ fun WindowScope.AppTitleBar(
 ) = WindowDraggableArea {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .background(colorScheme.surface)
-            .fillMaxWidth()
+        modifier = Modifier.fillMaxWidth()
     ) {
         CompositionLocalProvider(LocalContentColor provides colorScheme.onSurface) {
             TitleBarButton(

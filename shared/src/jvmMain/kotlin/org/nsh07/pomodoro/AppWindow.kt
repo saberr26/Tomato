@@ -20,7 +20,8 @@ package org.nsh07.pomodoro
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
@@ -29,6 +30,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
@@ -43,6 +45,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.nsh07.pomodoro.data.StateRepository
 import org.nsh07.pomodoro.ui.AppScreen
+import org.nsh07.pomodoro.ui.LocalContentWindowInsets
 import org.nsh07.pomodoro.ui.settingsScreen.viewModel.SettingsViewModel
 import org.nsh07.pomodoro.ui.theme.TomatoTheme
 import org.nsh07.pomodoro.utils.toColor
@@ -66,7 +69,8 @@ fun ApplicationScope.AppWindow(
     }
 
     CompositionLocalProvider(
-        LocalViewModelStoreOwner provides windowViewModelStoreOwner
+        LocalViewModelStoreOwner provides windowViewModelStoreOwner,
+        LocalContentWindowInsets provides { WindowInsets(top = 40.dp) }
     ) {
         if (isTraySupported) {
             AppSystemTray()
@@ -97,7 +101,15 @@ fun ApplicationScope.AppWindow(
                     seedColor = seed,
                     blackTheme = settingsState.blackTheme
                 ) {
-                    Column(Modifier.background(colorScheme.surface)) {
+                    Box(Modifier.background(colorScheme.surface)) {
+                        AppScreen(
+                            isAODEnabled = settingsState.aodEnabled,
+                            isPlus = isPlus,
+                            setTimerFrequency = {
+                                stateRepository.timerFrequency = it
+                            }
+                        )
+
                         AnimatedVisibility(windowState.placement != WindowPlacement.Fullscreen) {
                             AppTitleBar(
                                 windowFloating = windowState.placement == WindowPlacement.Floating,
@@ -111,14 +123,6 @@ fun ApplicationScope.AppWindow(
                                 onClose = { stateRepository.windowVisible.update { false } }
                             )
                         }
-
-                        AppScreen(
-                            isAODEnabled = settingsState.aodEnabled,
-                            isPlus = isPlus,
-                            setTimerFrequency = {
-                                stateRepository.timerFrequency = it
-                            },
-                        )
                     }
                 }
             }

@@ -81,6 +81,7 @@ import org.nsh07.pomodoro.ui.statsScreen.components.sharedBoundsReveal
 import org.nsh07.pomodoro.ui.theme.LocalAppFonts
 import org.nsh07.pomodoro.ui.theme.TomatoShapeDefaults.PANE_MAX_WIDTH
 import org.nsh07.pomodoro.ui.theme.TomatoShapeDefaults.middleListItemShape
+import org.nsh07.pomodoro.ui.topBarWindowInsets
 import org.nsh07.pomodoro.utils.millisecondsToHoursMinutes
 import org.nsh07.pomodoro.utils.millisecondsToMinutes
 import tomato.shared.generated.resources.Res
@@ -143,6 +144,7 @@ fun SharedTransitionScope.LastMonthScreen(
     Scaffold(
         topBar = {
             TopAppBar(
+                windowInsets = topBarWindowInsets(),
                 title = {
                     Text(
                         text = stringResource(Res.string.last_month),

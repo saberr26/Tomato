@@ -71,6 +71,7 @@ import org.nsh07.pomodoro.ui.theme.CustomColors.topBarColors
 import org.nsh07.pomodoro.ui.theme.LocalAppFonts
 import org.nsh07.pomodoro.ui.theme.TomatoShapeDefaults.segmentedListItemShapes
 import org.nsh07.pomodoro.ui.theme.TomatoTheme
+import org.nsh07.pomodoro.ui.topBarWindowInsets
 import org.nsh07.pomodoro.utils.androidDeviceManufacturerIs
 import org.nsh07.pomodoro.utils.androidSdkVersionAtLeast
 import tomato.shared.generated.resources.Res
@@ -126,6 +127,7 @@ fun SettingsMainScreen(
     Scaffold(
         topBar = {
             TopAppBar(
+                windowInsets = topBarWindowInsets(),
                 title = {
                     Text(
                         stringResource(Res.string.settings),

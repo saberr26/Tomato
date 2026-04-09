@@ -65,6 +65,7 @@ import org.nsh07.pomodoro.ui.theme.LocalAppFonts
 import org.nsh07.pomodoro.ui.theme.TomatoShapeDefaults.PANE_MAX_WIDTH
 import org.nsh07.pomodoro.ui.theme.TomatoShapeDefaults.segmentedListItemShapes
 import org.nsh07.pomodoro.ui.theme.TomatoTheme
+import org.nsh07.pomodoro.ui.topBarWindowInsets
 import org.nsh07.pomodoro.utils.toColor
 import tomato.shared.generated.resources.Res
 import tomato.shared.generated.resources.appearance
@@ -106,6 +107,7 @@ fun AppearanceSettings(
         Scaffold(
             topBar = {
                 LargeFlexibleTopAppBar(
+                    windowInsets = topBarWindowInsets(),
                     title = {
                         Text(
                             stringResource(Res.string.appearance),

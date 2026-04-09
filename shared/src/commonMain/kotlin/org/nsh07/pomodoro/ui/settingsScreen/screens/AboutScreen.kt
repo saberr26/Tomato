@@ -79,6 +79,7 @@ import org.nsh07.pomodoro.ui.theme.TomatoShapeDefaults.bottomListItemShape
 import org.nsh07.pomodoro.ui.theme.TomatoShapeDefaults.segmentedListItemShapes
 import org.nsh07.pomodoro.ui.theme.TomatoShapeDefaults.topListItemShape
 import org.nsh07.pomodoro.ui.theme.TomatoTheme
+import org.nsh07.pomodoro.ui.topBarWindowInsets
 import tomato.shared.generated.resources.Res
 import tomato.shared.generated.resources.about
 import tomato.shared.generated.resources.app_name
@@ -134,6 +135,7 @@ fun AboutScreen(
         Scaffold(
             topBar = {
                 LargeFlexibleTopAppBar(
+                    windowInsets = topBarWindowInsets(),
                     title = {
                         Text(
                             stringResource(Res.string.about),
