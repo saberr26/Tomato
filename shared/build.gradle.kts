@@ -130,7 +130,11 @@ buildkonfig {
             buildConfigField(
                 BOOLEAN,
                 "DEBUG",
-                if (gradle.startParameter.taskNames.contains("package")) "false" else "true"
+                if (
+                    gradle.startParameter.taskNames.any {
+                        it.contains("package", true)
+                    }
+                ) "false" else "true"
             )
         }
     }
