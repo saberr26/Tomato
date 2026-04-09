@@ -15,6 +15,7 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.BOOLEAN
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.INT
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -122,6 +123,16 @@ buildkonfig {
         buildConfigField(INT, "VERSION_CODE", libs.versions.app.versionCode.get())
         buildConfigField(STRING, "VERSION_NAME", libs.versions.app.versionName.get())
         buildConfigField(STRING, "DATABASE_NAME", "app_database")
+    }
+
+    targetConfigs {
+        create("jvm") {
+            buildConfigField(
+                BOOLEAN,
+                "DEBUG",
+                if (gradle.startParameter.taskNames.contains("package")) "false" else "true"
+            )
+        }
     }
 }
 
