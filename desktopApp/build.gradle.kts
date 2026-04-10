@@ -82,6 +82,7 @@ compose.desktop {
             }
             windows {
                 iconFile = project.file("src/main/logo.ico")
+                description = "Tomato"
                 console = false
                 dirChooser = true
                 perUserInstall = true

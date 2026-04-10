@@ -33,12 +33,14 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.shape.CircleShape
@@ -54,6 +56,7 @@ import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.motionScheme
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
@@ -63,6 +66,7 @@ import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -163,6 +167,7 @@ fun AppScreen(
     var showPaywall by remember { mutableStateOf(false) }
 
     Scaffold(
+        contentWindowInsets = LocalContentWindowInsets.current(),
         bottomBar = {
             AnimatedVisibility(
                 backStack.last() !is Screen.AOD,
@@ -368,3 +373,13 @@ fun AppScreen(
         flavorUI.tomatoPlusPaywallDialog(isPlus) { showPaywall = false }
     }
 }
+
+val LocalContentWindowInsets = compositionLocalOf {
+    @Composable { ScaffoldDefaults.contentWindowInsets }
+}
+
+@Composable
+fun topBarWindowInsets(): WindowInsets =
+    LocalContentWindowInsets
+        .current()
+        .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)

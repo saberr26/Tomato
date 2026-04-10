@@ -113,8 +113,7 @@ private fun createDatabase(): AppDatabase {
 }
 
 private fun createAppInfo(): AppInfo {
-    // TODO: Implement AppInfo
-    return AppInfo(debug = true)
+    return AppInfo(BuildKonfig.DEBUG)
 }
 
 private fun createWindowState(): WindowState {

@@ -99,6 +99,7 @@ import org.nsh07.pomodoro.ui.theme.TomatoShapeDefaults.bottomListItemShape
 import org.nsh07.pomodoro.ui.theme.TomatoShapeDefaults.cardShape
 import org.nsh07.pomodoro.ui.theme.TomatoShapeDefaults.middleListItemShape
 import org.nsh07.pomodoro.ui.theme.TomatoShapeDefaults.topListItemShape
+import org.nsh07.pomodoro.ui.topBarWindowInsets
 import org.nsh07.pomodoro.utils.androidSdkVersionAtLeast
 import org.nsh07.pomodoro.utils.millisecondsToHoursMinutes
 import tomato.shared.generated.resources.Res
@@ -222,6 +223,7 @@ fun TimerSettings(
         Scaffold(
             topBar = {
                 LargeFlexibleTopAppBar(
+                    windowInsets = topBarWindowInsets(),
                     title = {
                         Text(
                             stringResource(Res.string.timer),

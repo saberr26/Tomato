@@ -15,6 +15,7 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.BOOLEAN
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.INT
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -40,8 +41,6 @@ compose.resources {
 }
 
 kotlin {
-    compilerOptions.freeCompilerArgs.add("-Xexpect-actual-classes")
-
     android {
         namespace = "org.nsh07.pomodoro.shared"
         compileSdk = libs.versions.app.targetSdk.get().toInt()
@@ -84,8 +83,7 @@ kotlin {
             implementation(libs.vico.compose.m3)
             implementation(libs.material.kolor)
 
-            implementation(libs.filekit.core)
-            implementation(libs.filekit.dialogs.compose)
+            implementation(libs.filekit.core) // file handling
         }
 
         androidMain.dependencies {
@@ -110,6 +108,8 @@ kotlin {
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.androidx.sqlite.bundled)
 
+            implementation(libs.filekit.dialogs.compose)
+
             implementation(libs.composenativetray) // tray icons
 
             implementation(libs.jlayer.player) // MP3 playback
@@ -123,6 +123,20 @@ buildkonfig {
         buildConfigField(INT, "VERSION_CODE", libs.versions.app.versionCode.get())
         buildConfigField(STRING, "VERSION_NAME", libs.versions.app.versionName.get())
         buildConfigField(STRING, "DATABASE_NAME", "app_database")
+    }
+
+    targetConfigs {
+        create("jvm") {
+            buildConfigField(
+                BOOLEAN,
+                "DEBUG",
+                if (
+                    gradle.startParameter.taskNames.any {
+                        it.contains("package", true)
+                    }
+                ) "false" else "true"
+            )
+        }
     }
 }
 

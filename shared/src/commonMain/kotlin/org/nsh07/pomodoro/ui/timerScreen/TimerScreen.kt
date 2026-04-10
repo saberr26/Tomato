@@ -126,6 +126,7 @@ import org.nsh07.pomodoro.ui.theme.TomatoTheme
 import org.nsh07.pomodoro.ui.timerScreen.viewModel.TimerAction
 import org.nsh07.pomodoro.ui.timerScreen.viewModel.TimerMode
 import org.nsh07.pomodoro.ui.timerScreen.viewModel.TimerState
+import org.nsh07.pomodoro.ui.topBarWindowInsets
 import org.nsh07.pomodoro.utils.androidSdkVersionAtLeast
 import org.nsh07.pomodoro.utils.millisecondsToStr
 import tomato.shared.generated.resources.Res
@@ -218,6 +219,7 @@ fun SharedTransitionScope.TimerScreen(
                 Scaffold(
                     topBar = {
                         TopAppBar(
+                            windowInsets = topBarWindowInsets(),
                             title = {
                                 AnimatedContent(
                                     if (!timerState.showBrandTitle) timerState.timerMode else TimerMode.BRAND,

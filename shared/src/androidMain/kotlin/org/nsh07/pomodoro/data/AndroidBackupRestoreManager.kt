@@ -20,9 +20,10 @@ package org.nsh07.pomodoro.data
 import android.content.Context
 import android.content.Intent
 import android.provider.DocumentsContract
+import androidx.core.net.toUri
 import androidx.room.RoomRawQuery
 import io.github.vinceglb.filekit.PlatformFile
-import io.github.vinceglb.filekit.dialogs.toAndroidUri
+import io.github.vinceglb.filekit.path
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.nsh07.pomodoro.BuildKonfig
@@ -43,9 +44,9 @@ class AndroidBackupRestoreManager(
             val dbName = BuildKonfig.DATABASE_NAME
             val dbFile = context.getDatabasePath(dbName)
 
-            val documentId = DocumentsContract.getTreeDocumentId(directory.toAndroidUri())
+            val documentId = DocumentsContract.getTreeDocumentId(directory.path.toUri())
             val parentDocumentUri =
-                DocumentsContract.buildDocumentUriUsingTree(directory.toAndroidUri(), documentId)
+                DocumentsContract.buildDocumentUriUsingTree(directory.path.toUri(), documentId)
 
             val fileUri = DocumentsContract.createDocument(
                 context.contentResolver,
@@ -77,7 +78,7 @@ class AndroidBackupRestoreManager(
             File("${dbFile.path}-wal").delete()
             File("${dbFile.path}-shm").delete()
 
-            context.contentResolver.openInputStream(file.toAndroidUri())?.use { input ->
+            context.contentResolver.openInputStream(file.path.toUri())?.use { input ->
                 FileOutputStream(dbFile).use { output ->
                     input.copyTo(output)
                 }

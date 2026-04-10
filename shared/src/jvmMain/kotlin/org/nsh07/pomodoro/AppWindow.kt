@@ -17,15 +17,25 @@
 
 package org.nsh07.pomodoro
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.isTraySupported
 import androidx.lifecycle.ViewModelStore
@@ -37,12 +47,15 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.nsh07.pomodoro.data.StateRepository
 import org.nsh07.pomodoro.ui.AppScreen
+import org.nsh07.pomodoro.ui.LocalContentWindowInsets
 import org.nsh07.pomodoro.ui.settingsScreen.viewModel.SettingsViewModel
 import org.nsh07.pomodoro.ui.theme.TomatoTheme
 import org.nsh07.pomodoro.utils.toColor
 import tomato.shared.generated.resources.Res
 import tomato.shared.generated.resources.app_name
 import tomato.shared.generated.resources.logo
+
+val isMacOS = System.getProperty("os.name").lowercase().startsWith("mac")
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -60,7 +73,8 @@ fun ApplicationScope.AppWindow(
     }
 
     CompositionLocalProvider(
-        LocalViewModelStoreOwner provides windowViewModelStoreOwner
+        LocalViewModelStoreOwner provides windowViewModelStoreOwner,
+        LocalContentWindowInsets provides { WindowInsets(top = if (isMacOS) 28.dp else 32.dp) }
     ) {
         if (isTraySupported) {
             AppSystemTray()
@@ -71,8 +85,19 @@ fun ApplicationScope.AppWindow(
                 state = windowState,
                 onCloseRequest = { stateRepository.windowVisible.update { false } },
                 title = stringResource(Res.string.app_name),
-                icon = painterResource(Res.drawable.logo)
+                icon = painterResource(Res.drawable.logo),
+                undecorated = !isMacOS,
+                transparent = !isMacOS,
+                alwaysOnTop = BuildKonfig.DEBUG
             ) {
+                if (isMacOS) {
+                    window.rootPane.apply {
+                        putClientProperty("apple.awt.fullWindowContent", true)
+                        putClientProperty("apple.awt.transparentTitleBar", true)
+                        putClientProperty("apple.awt.windowTitleVisible", false)
+                    }
+                }
+
                 val settingsState by settingsViewModel.settingsState.collectAsState()
                 val isPlus by settingsViewModel.isPlus.collectAsState()
 
@@ -89,13 +114,32 @@ fun ApplicationScope.AppWindow(
                     seedColor = seed,
                     blackTheme = settingsState.blackTheme
                 ) {
-                    AppScreen(
-                        isAODEnabled = settingsState.aodEnabled,
-                        isPlus = isPlus,
-                        setTimerFrequency = {
-                            stateRepository.timerFrequency = it
+                    Box(Modifier.background(colorScheme.surface)) {
+                        AppScreen(
+                            isAODEnabled = settingsState.aodEnabled,
+                            isPlus = isPlus,
+                            setTimerFrequency = {
+                                stateRepository.timerFrequency = it
+                            }
+                        )
+
+                        AnimatedVisibility(
+                            windowState.placement != WindowPlacement.Fullscreen,
+                            enter = expandVertically(),
+                            exit = shrinkVertically()
+                        ) {
+                            AppTitleBar(
+                                windowFloating = windowState.placement == WindowPlacement.Floating,
+                                onMinimize = { windowState.isMinimized = true },
+                                onMaximizeRestore = {
+                                    if (windowState.placement == WindowPlacement.Floating)
+                                        windowState.placement = WindowPlacement.Maximized
+                                    else windowState.placement = WindowPlacement.Floating
+                                },
+                                onClose = { stateRepository.windowVisible.update { false } }
+                            )
                         }
-                    )
+                    }
                 }
             }
         }
