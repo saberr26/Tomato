@@ -18,6 +18,8 @@
 package org.nsh07.pomodoro
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -121,7 +123,11 @@ fun ApplicationScope.AppWindow(
                             }
                         )
 
-                        AnimatedVisibility(windowState.placement != WindowPlacement.Fullscreen) {
+                        AnimatedVisibility(
+                            windowState.placement != WindowPlacement.Fullscreen,
+                            enter = expandVertically(),
+                            exit = shrinkVertically()
+                        ) {
                             AppTitleBar(
                                 windowFloating = windowState.placement == WindowPlacement.Floating,
                                 onMinimize = { windowState.isMinimized = true },

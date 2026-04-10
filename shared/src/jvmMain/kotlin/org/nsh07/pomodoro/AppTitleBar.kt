@@ -60,11 +60,12 @@ fun WindowScope.AppTitleBar(
     windowFloating: Boolean,
     onMinimize: () -> Unit,
     onMaximizeRestore: () -> Unit,
-    onClose: () -> Unit
+    onClose: () -> Unit,
+    modifier: Modifier = Modifier
 ) = WindowDraggableArea {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .then(
                 if (isMacOS) Modifier.height(28.dp)
