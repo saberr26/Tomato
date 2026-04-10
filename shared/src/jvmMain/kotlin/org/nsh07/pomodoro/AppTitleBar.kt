@@ -25,6 +25,7 @@ import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.window.WindowDraggableArea
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -47,8 +48,6 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import tomato.shared.generated.resources.Res
 import tomato.shared.generated.resources.app_name
-import tomato.shared.generated.resources.arrow_back
-import tomato.shared.generated.resources.back
 import tomato.shared.generated.resources.clear
 import tomato.shared.generated.resources.exit
 import tomato.shared.generated.resources.window_maximize
@@ -59,55 +58,54 @@ import tomato.shared.generated.resources.window_restore
 @Composable
 fun WindowScope.AppTitleBar(
     windowFloating: Boolean,
-    onBack: () -> Unit,
     onMinimize: () -> Unit,
     onMaximizeRestore: () -> Unit,
     onClose: () -> Unit
 ) = WindowDraggableArea {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(
+                if (isMacOS) Modifier.height(28.dp)
+                else Modifier
+            )
     ) {
         CompositionLocalProvider(LocalContentColor provides colorScheme.onSurface) {
-            TitleBarButton(
-                onClick = onBack,
-                iconPainter = painterResource(Res.drawable.arrow_back),
-                contentDescription = stringResource(Res.string.back),
-                modifier = Modifier.align(Alignment.CenterStart)
-            )
-
             Text(
                 stringResource(Res.string.app_name),
-                style = typography.titleMedium,
+                style = typography.titleSmall,
                 color = colorScheme.onSurface
             )
 
-            Row(
+            if (!isMacOS) {
+                Row(
 //                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                modifier = Modifier.align(Alignment.CenterEnd)
-            ) {
-                TitleBarButton(
-                    onClick = onMinimize,
-                    iconPainter = painterResource(Res.drawable.window_minimize),
-                    contentDescription = null
-                )
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                ) {
+                    TitleBarButton(
+                        onClick = onMinimize,
+                        iconPainter = painterResource(Res.drawable.window_minimize),
+                        contentDescription = null
+                    )
 
-                TitleBarButton(
-                    onClick = onMaximizeRestore,
-                    iconPainter = painterResource(
-                        if (windowFloating) Res.drawable.window_maximize
-                        else Res.drawable.window_restore
-                    ),
-                    contentDescription = null
-                )
+                    TitleBarButton(
+                        onClick = onMaximizeRestore,
+                        iconPainter = painterResource(
+                            if (windowFloating) Res.drawable.window_maximize
+                            else Res.drawable.window_restore
+                        ),
+                        contentDescription = null
+                    )
 
-                TitleBarButton(
-                    onClick = onClose,
-                    iconPainter = painterResource(Res.drawable.clear),
-                    contentDescription = stringResource(Res.string.exit),
-                    hoveredContainerColor = colorScheme.error,
-                    hoveredContentColor = colorScheme.onError
-                )
+                    TitleBarButton(
+                        onClick = onClose,
+                        iconPainter = painterResource(Res.drawable.clear),
+                        contentDescription = stringResource(Res.string.exit),
+                        hoveredContainerColor = colorScheme.error,
+                        hoveredContentColor = colorScheme.onError
+                    )
+                }
             }
         }
     }
@@ -132,14 +130,14 @@ private fun TitleBarButton(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .background(containerColor)
-            .size(40.dp)
+            .size(32.dp)
             .clickable(interactionSource = interactionSource, onClick = onClick)
     ) {
         Icon(
             iconPainter,
             contentDescription,
             tint = contentColor,
-            modifier = Modifier.size(20.dp)
+            modifier = Modifier.size(18.dp)
         )
     }
 }

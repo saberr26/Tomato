@@ -53,6 +53,8 @@ import tomato.shared.generated.resources.Res
 import tomato.shared.generated.resources.app_name
 import tomato.shared.generated.resources.logo
 
+val isMacOS = System.getProperty("os.name").lowercase().startsWith("mac")
+
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ApplicationScope.AppWindow(
@@ -70,7 +72,7 @@ fun ApplicationScope.AppWindow(
 
     CompositionLocalProvider(
         LocalViewModelStoreOwner provides windowViewModelStoreOwner,
-        LocalContentWindowInsets provides { WindowInsets(top = 40.dp) }
+        LocalContentWindowInsets provides { WindowInsets(top = if (isMacOS) 28.dp else 32.dp) }
     ) {
         if (isTraySupported) {
             AppSystemTray()
@@ -82,9 +84,18 @@ fun ApplicationScope.AppWindow(
                 onCloseRequest = { stateRepository.windowVisible.update { false } },
                 title = stringResource(Res.string.app_name),
                 icon = painterResource(Res.drawable.logo),
-                undecorated = true,
+                undecorated = !isMacOS,
+                transparent = !isMacOS,
                 alwaysOnTop = BuildKonfig.DEBUG
             ) {
+                if (isMacOS) {
+                    window.rootPane.apply {
+                        putClientProperty("apple.awt.fullWindowContent", true)
+                        putClientProperty("apple.awt.transparentTitleBar", true)
+                        putClientProperty("apple.awt.windowTitleVisible", false)
+                    }
+                }
+
                 val settingsState by settingsViewModel.settingsState.collectAsState()
                 val isPlus by settingsViewModel.isPlus.collectAsState()
 
@@ -113,7 +124,6 @@ fun ApplicationScope.AppWindow(
                         AnimatedVisibility(windowState.placement != WindowPlacement.Fullscreen) {
                             AppTitleBar(
                                 windowFloating = windowState.placement == WindowPlacement.Floating,
-                                onBack = {},
                                 onMinimize = { windowState.isMinimized = true },
                                 onMaximizeRestore = {
                                     if (windowState.placement == WindowPlacement.Floating)
