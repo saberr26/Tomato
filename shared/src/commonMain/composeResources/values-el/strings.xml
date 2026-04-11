@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~ Copyright (c) 2025-2026 Nishant Mishra
   ~
   ~ This file is part of Tomato - a minimalist pomodoro timer for Android.
@@ -13,8 +14,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License along with Tomato.
   ~ If not, see <https://www.gnu.org/licenses/>.
-  -->
-<resources xmlns:tools="http://schemas.android.com/tools">
+  --><resources xmlns:tools="http://schemas.android.com/tools">
     <string name="alarm">Ξυπνητήρι</string>
     <string name="alarm_desc">Κουδούνισμα όταν ένα χρονόμετρο τελειώνει</string>
     <string name="alarm_sound">Ήχος κουδουνίσματος</string>
@@ -58,7 +58,7 @@
     <string name="pause">Παύση</string>
     <string name="paused">Σε παύση</string>
     <string name="play">Αναπαραγωγή</string>
-    <string name="pomodoro_info">Μια «συνεδρία» είναι μια σειρά από διαστήματα pοmodoro που περιέχουν διαστήματα εστίασης, σύντομα διαστήματα διαλείμματα και ένα μακρύ διάλειμμα. Το τελευταίο διάλειμμα μιας συνεδρίας είναι πάντα ένα μεγάλο διάλειμμα.</string>
+    <string name="pomodoro_info">Μια συνεδρία είναι μια σειρά από διαστήματα pοmodoro που περιέχουν διαστήματα εστίασης, σύντομα διαστήματα διαλείμματα και ένα μακρύ διάλειμμα. Το τελευταίο διάλειμμα μιας συνεδρίας είναι πάντα ένα μεγάλο διάλειμμα.</string>
     <string name="rate_on_google_play">Αξιολόγηση στο Google Play</string>
     <string name="restart">Επανεκκίνηση</string>
     <string name="selected" tools:override="true">Επιλέχθηκε</string>
@@ -140,4 +140,9 @@
     <string name="choose_file">Επιλέξτε αρχείο</string>
     <string name="restart_app">Επανεκκίνηση εφαρμογής</string>
     <string name="vibration_pattern">Μοτίβο δόνησης</string>
+    <string name="open_tomato">Άνοιγμα Tomato</string>
+    <string name="quit_tomato">Έξοδος Tomato</string>
+    <string name="infinite">Άπειρο</string>
+    <string name="infinite_focus">Άπειρη εστίαση</string>
+    <string name="cancel">Ακύρωση</string>
 </resources>
