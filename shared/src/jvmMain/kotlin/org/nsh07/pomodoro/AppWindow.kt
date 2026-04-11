@@ -55,14 +55,13 @@ import tomato.shared.generated.resources.Res
 import tomato.shared.generated.resources.app_name
 import tomato.shared.generated.resources.logo
 
-val isMacOS = System.getProperty("os.name").lowercase().startsWith("mac")
-
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ApplicationScope.AppWindow(
     settingsViewModel: SettingsViewModel = koinInject(),
     stateRepository: StateRepository = koinInject()
 ) {
+    val isMacOS = currentOS == OS.MACOS
     val windowState: WindowState = koinInject()
     val windowVisible by stateRepository.windowVisible.collectAsState()
 

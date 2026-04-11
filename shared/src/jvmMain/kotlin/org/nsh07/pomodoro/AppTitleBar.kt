@@ -63,6 +63,7 @@ fun WindowScope.AppTitleBar(
     onClose: () -> Unit,
     modifier: Modifier = Modifier
 ) = WindowDraggableArea {
+    val isMacOS = currentOS == OS.MACOS
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
