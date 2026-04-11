@@ -30,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -61,9 +62,12 @@ fun ApplicationScope.AppWindow(
     settingsViewModel: SettingsViewModel = koinInject(),
     stateRepository: StateRepository = koinInject()
 ) {
+    //TODO: Load window decor setting on startup
     val isMacOS = currentOS == OS.MACOS
     val windowState: WindowState = koinInject()
     val windowVisible by stateRepository.windowVisible.collectAsState()
+
+    val settingsState by settingsViewModel.settingsState.collectAsState()
 
     val windowViewModelStoreOwner = remember {
         object : ViewModelStoreOwner {
@@ -80,63 +84,65 @@ fun ApplicationScope.AppWindow(
         }
 
         if (windowVisible) {
-            Window(
-                state = windowState,
-                onCloseRequest = { stateRepository.windowVisible.update { false } },
-                title = stringResource(Res.string.app_name),
-                icon = painterResource(Res.drawable.logo),
-                undecorated = !isMacOS,
-                transparent = !isMacOS,
-                alwaysOnTop = BuildKonfig.DEBUG
-            ) {
-                if (isMacOS) {
-                    window.rootPane.apply {
-                        putClientProperty("apple.awt.fullWindowContent", true)
-                        putClientProperty("apple.awt.transparentTitleBar", true)
-                        putClientProperty("apple.awt.windowTitleVisible", false)
-                    }
-                }
-
-                val settingsState by settingsViewModel.settingsState.collectAsState()
-                val isPlus by settingsViewModel.isPlus.collectAsState()
-
-                val darkTheme = when (settingsState.theme) {
-                    "dark" -> true
-                    "light" -> false
-                    else -> isSystemInDarkTheme()
-                }
-
-                val seed = settingsState.colorScheme.toColor()
-
-                TomatoTheme(
-                    darkTheme = darkTheme,
-                    seedColor = seed,
-                    blackTheme = settingsState.blackTheme
+            key(settingsState.customWindowDecor) {
+                Window(
+                    state = windowState,
+                    onCloseRequest = { stateRepository.windowVisible.update { false } },
+                    title = stringResource(Res.string.app_name),
+                    icon = painterResource(Res.drawable.logo),
+                    undecorated = settingsState.customWindowDecor && !isMacOS, // we don't need custom decorations on macOS
+                    transparent = settingsState.customWindowDecor && !isMacOS,
+                    alwaysOnTop = BuildKonfig.DEBUG
                 ) {
-                    Box(Modifier.background(colorScheme.surface)) {
-                        AppScreen(
-                            isAODEnabled = settingsState.aodEnabled,
-                            isPlus = isPlus,
-                            setTimerFrequency = {
-                                stateRepository.timerFrequency = it
-                            }
-                        )
+                    if (isMacOS && settingsState.customWindowDecor) {
+                        window.rootPane.apply {
+                            putClientProperty("apple.awt.fullWindowContent", true)
+                            putClientProperty("apple.awt.transparentTitleBar", true)
+                            putClientProperty("apple.awt.windowTitleVisible", false)
+                        }
+                    }
 
-                        AnimatedVisibility(
-                            windowState.placement != WindowPlacement.Fullscreen,
-                            enter = expandVertically(),
-                            exit = shrinkVertically()
-                        ) {
-                            AppTitleBar(
-                                windowFloating = windowState.placement == WindowPlacement.Floating,
-                                onMinimize = { windowState.isMinimized = true },
-                                onMaximizeRestore = {
-                                    if (windowState.placement == WindowPlacement.Floating)
-                                        windowState.placement = WindowPlacement.Maximized
-                                    else windowState.placement = WindowPlacement.Floating
-                                },
-                                onClose = { stateRepository.windowVisible.update { false } }
+                    val isPlus by settingsViewModel.isPlus.collectAsState()
+
+                    val darkTheme = when (settingsState.theme) {
+                        "dark" -> true
+                        "light" -> false
+                        else -> isSystemInDarkTheme()
+                    }
+
+                    val seed = settingsState.colorScheme.toColor()
+
+                    TomatoTheme(
+                        darkTheme = darkTheme,
+                        seedColor = seed,
+                        blackTheme = settingsState.blackTheme
+                    ) {
+                        Box(Modifier.background(colorScheme.surface)) {
+                            AppScreen(
+                                isAODEnabled = settingsState.aodEnabled,
+                                isPlus = isPlus,
+                                setTimerFrequency = {
+                                    stateRepository.timerFrequency = it
+                                }
                             )
+
+                            AnimatedVisibility(
+                                windowState.placement != WindowPlacement.Fullscreen &&
+                                        settingsState.customWindowDecor,
+                                enter = expandVertically(),
+                                exit = shrinkVertically()
+                            ) {
+                                AppTitleBar(
+                                    windowFloating = windowState.placement == WindowPlacement.Floating,
+                                    onMinimize = { windowState.isMinimized = true },
+                                    onMaximizeRestore = {
+                                        if (windowState.placement == WindowPlacement.Floating)
+                                            windowState.placement = WindowPlacement.Maximized
+                                        else windowState.placement = WindowPlacement.Floating
+                                    },
+                                    onClose = { stateRepository.windowVisible.update { false } }
+                                )
+                            }
                         }
                     }
                 }

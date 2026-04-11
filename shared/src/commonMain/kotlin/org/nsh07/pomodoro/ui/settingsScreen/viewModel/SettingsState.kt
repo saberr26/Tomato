@@ -47,5 +47,7 @@ data class SettingsState(
 
     val sessionLength: Int = 4,
 
-    val alarmSoundUri: String? = getDefaultAlarmTone()
+    val alarmSoundUri: String? = getDefaultAlarmTone(),
+
+    val customWindowDecor: Boolean = true // Used on desktop only
 )

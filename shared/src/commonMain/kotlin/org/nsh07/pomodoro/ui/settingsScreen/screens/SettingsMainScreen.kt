@@ -40,15 +40,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalLocale
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -62,7 +57,6 @@ import org.nsh07.pomodoro.ui.Screen
 import org.nsh07.pomodoro.ui.SettingsNavItem
 import org.nsh07.pomodoro.ui.mergePaddingValues
 import org.nsh07.pomodoro.ui.settingsScreen.ResetDataDialog
-import org.nsh07.pomodoro.ui.settingsScreen.components.LocaleBottomSheet
 import org.nsh07.pomodoro.ui.settingsScreen.components.PlusPromo
 import org.nsh07.pomodoro.ui.settingsScreen.viewModel.SettingsAction
 import org.nsh07.pomodoro.ui.settingsScreen.viewModel.SettingsState
@@ -72,8 +66,6 @@ import org.nsh07.pomodoro.ui.theme.LocalAppFonts
 import org.nsh07.pomodoro.ui.theme.TomatoShapeDefaults.segmentedListItemShapes
 import org.nsh07.pomodoro.ui.theme.TomatoTheme
 import org.nsh07.pomodoro.ui.topBarWindowInsets
-import org.nsh07.pomodoro.utils.androidDeviceManufacturerIs
-import org.nsh07.pomodoro.utils.androidSdkVersionAtLeast
 import tomato.shared.generated.resources.Res
 import tomato.shared.generated.resources.about
 import tomato.shared.generated.resources.app_name
@@ -81,10 +73,6 @@ import tomato.shared.generated.resources.arrow_forward_big
 import tomato.shared.generated.resources.backup
 import tomato.shared.generated.resources.backup_and_restore
 import tomato.shared.generated.resources.info
-import tomato.shared.generated.resources.language
-import tomato.shared.generated.resources.mobile_text
-import tomato.shared.generated.resources.now_bar
-import tomato.shared.generated.resources.open_in_browser
 import tomato.shared.generated.resources.reset_data
 import tomato.shared.generated.resources.restore
 import tomato.shared.generated.resources.settings
@@ -106,16 +94,6 @@ fun SettingsMainScreen(
     val widthExpanded = currentWindowAdaptiveInfo()
         .windowSizeClass
         .isWidthAtLeastBreakpoint(WIDTH_DP_EXPANDED_LOWER_BOUND)
-
-    val currentLocale =
-        if (androidSdkVersionAtLeast(33)) {
-            LocalLocale.current
-        } else null
-
-    var showLocaleSheet by remember { mutableStateOf(false) }
-
-    if (showLocaleSheet)
-        LocaleBottomSheet({ showLocaleSheet = it })
 
     if (settingsState.isShowingEraseDataDialog) {
         ResetDataDialog(
@@ -240,38 +218,8 @@ fun SettingsMainScreen(
 
             item { Spacer(Modifier.height(12.dp)) }
 
-            if (currentLocale != null)
-                item {
-                    SegmentedListItem(
-                        leadingContent = {
-                            Icon(painterResource(Res.drawable.language), contentDescription = null)
-                        },
-                        supportingContent = {
-                            Text(currentLocale.platformLocale.displayLanguage)
-                        },
-                        selected = showLocaleSheet,
-                        shapes = segmentedListItemShapes(0, 1),
-                        colors = listItemColors,
-                        onClick = { showLocaleSheet = true }
-                    ) { Text(stringResource(Res.string.language)) }
-                }
-
-            if (androidSdkVersionAtLeast(36) && androidDeviceManufacturerIs("samsung")) {
-                item {
-                    val uriHandler = LocalUriHandler.current
-                    Spacer(Modifier.height(14.dp))
-                    SegmentedListItem(
-                        leadingContent = {
-                            Icon(painterResource(Res.drawable.mobile_text), null)
-                        },
-                        trailingContent = {
-                            Icon(painterResource(Res.drawable.open_in_browser), null)
-                        },
-                        shapes = segmentedListItemShapes(0, 1),
-                        colors = listItemColors,
-                        onClick = { uriHandler.openUri("https://gist.github.com/nsh07/3b42969aef017d98f72b097f1eca8911") }
-                    ) { Text(stringResource(Res.string.now_bar)) }
-                }
+            item {
+                PlatformSettings()
             }
 
             item { Spacer(Modifier.height(12.dp)) }

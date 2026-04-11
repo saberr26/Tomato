@@ -51,6 +51,7 @@ import org.nsh07.pomodoro.service.TimerManager
 import org.nsh07.pomodoro.timer.DesktopTimerHelper
 import org.nsh07.pomodoro.ui.settingsScreen.components.BottomButton
 import org.nsh07.pomodoro.ui.settingsScreen.components.TopButton
+import org.nsh07.pomodoro.ui.settingsScreen.screens.PlatformSettingsViewModel
 import org.nsh07.pomodoro.ui.settingsScreen.screens.backupRestore.viewModel.BackupRestoreViewModel
 import org.nsh07.pomodoro.ui.settingsScreen.viewModel.SettingsViewModel
 import org.nsh07.pomodoro.ui.statsScreen.viewModel.StatsViewModel
@@ -69,6 +70,7 @@ val viewModels = module {
     viewModel<TimerViewModel>()
     viewModel<SettingsViewModel>()
     viewModel<StatsViewModel>()
+    viewModel<PlatformSettingsViewModel>()
 }
 
 val desktopModule = module {
