@@ -29,6 +29,8 @@ modules:
       env:
         JAVA_HOME: /usr/lib/sdk/openjdk21/jvm/openjdk-21
         PATH: /usr/lib/sdk/openjdk21/bin:/usr/bin:/bin
+      build-args:
+        - --share=network
     build-commands:
       # Build the distributable (unpacked app with bundled JRE)
       - chmod +x gradlew

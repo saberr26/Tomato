@@ -72,6 +72,12 @@ jobs:
           archive: false
           path: ./desktopApp/build/compose/binaries/main-release/rpm/*.rpm
 
+  package-linux:
+    needs: build-linux
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
       - name: Install Flatpak and flatpak-builder
         run: |
           sudo apt-get update
@@ -82,7 +88,7 @@ jobs:
       - name: Build Flatpak
         run: |
           flatpak-builder --force-clean --user --repo=flatpak-repo \
-            flatpak-build-dir flatpak/org.nsh07.pomodoro.yml
+            flatpak-build-dir $GITHUB_WORKSPACE/flatpak/org.nsh07.pomodoro.yml
           flatpak build-bundle flatpak-repo Tomato.flatpak org.nsh07.pomodoro
 
       - name: Upload packaged Flatpak
@@ -91,7 +97,6 @@ jobs:
           archive: false
           path: ./Tomato.flatpak
 
-      # --- Snap ---
       - name: Build Snap
         uses: snapcore/action-build@v1
         id: snapcraft
@@ -101,7 +106,7 @@ jobs:
         with:
           archive: false
           path: ${{ steps.snapcraft.outputs.snap }}
-
+  
   build-macos:
     runs-on: macos-latest
 
