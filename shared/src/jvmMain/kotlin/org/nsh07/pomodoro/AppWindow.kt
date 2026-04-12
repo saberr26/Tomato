@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.shapes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
@@ -33,6 +34,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.Window
@@ -64,7 +66,6 @@ fun ApplicationScope.AppWindow(
     settingsViewModel: SettingsViewModel = koinInject(),
     stateRepository: StateRepository = koinInject()
 ) {
-    //TODO: Load window decor setting on startup
     val isMacOS = currentOS == OS.MACOS
     val windowState: WindowState = koinInject()
     val windowVisible by stateRepository.windowVisible.collectAsState()
@@ -76,6 +77,8 @@ fun ApplicationScope.AppWindow(
             override val viewModelStore = ViewModelStore()
         }
     }
+
+    val customWindowDecorsEnabled = settingsState.customWindowDecor && !isMacOS
 
     CompositionLocalProvider(
         LocalViewModelStoreOwner provides windowViewModelStoreOwner,
@@ -98,8 +101,8 @@ fun ApplicationScope.AppWindow(
                     onCloseRequest = { stateRepository.windowVisible.update { false } },
                     title = stringResource(Res.string.app_name),
                     icon = painterResource(Res.drawable.logo),
-                    undecorated = settingsState.customWindowDecor && !isMacOS, // we don't need undecorated on macOS
-                    transparent = settingsState.customWindowDecor && !isMacOS,
+                    undecorated = customWindowDecorsEnabled,
+                    transparent = customWindowDecorsEnabled,
                     alwaysOnTop = BuildKonfig.DEBUG
                 ) {
                     if (isMacOS && settingsState.customWindowDecor) {
@@ -125,7 +128,15 @@ fun ApplicationScope.AppWindow(
                         seedColor = seed,
                         blackTheme = settingsState.blackTheme
                     ) {
-                        Box(Modifier.background(colorScheme.surface)) {
+                        Box(
+                            Modifier
+                                .then(
+                                    if (customWindowDecorsEnabled && windowState.placement == WindowPlacement.Floating)
+                                        Modifier.clip(shapes.small)
+                                    else Modifier
+                                )
+                                .background(colorScheme.surface)
+                        ) {
                             AppScreen(
                                 isAODEnabled = settingsState.aodEnabled,
                                 isPlus = isPlus,
