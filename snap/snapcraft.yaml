@@ -1,0 +1,63 @@
+name: tomato
+version: '1.8.5'
+summary: Minimalist, data-oriented pomodoro timer
+description: |
+  Tomato is a minimalist, data-oriented pomodoro timer that helps you stay
+  focused and productive. Track your work sessions, breaks, and build
+  healthy focus habits.
+
+  Features:
+  - Clean, distraction-free timer interface
+  - Session tracking and statistics
+  - Customizable work/break durations
+  - Material You design
+
+base: core22
+confinement: strict
+grade: stable
+icon: shared/src/jvmMain/composeResources/drawable/logo.png
+license: GPL-3.0
+
+architectures:
+  - build-on: [ amd64 ]
+    build-for: [ amd64 ]
+
+apps:
+  tomato:
+    command: bin/tomato-launch
+    extensions: [ gnome ]
+    plugs:
+      - x11
+      - wayland
+      - desktop
+      - desktop-legacy
+      - audio-playback
+      - opengl
+      - network
+
+parts:
+  tomato:
+    plugin: nil
+    source: .
+    build-packages:
+      - openjdk-21-jdk-headless
+    override-build: |
+      # Build the distributable
+      chmod +x gradlew
+      ./gradlew :desktopApp:createReleaseDistributable
+
+      # Install the distributable
+      mkdir -p $SNAPCRAFT_PART_INSTALL/opt/tomato
+      cp -r desktopApp/build/compose/binaries/main-release/app/Tomato/* $SNAPCRAFT_PART_INSTALL/opt/tomato/
+
+      # Create launcher script
+      mkdir -p $SNAPCRAFT_PART_INSTALL/bin
+      cat > $SNAPCRAFT_PART_INSTALL/bin/tomato-launch << 'EOF'
+      #!/bin/sh
+      exec $SNAP/opt/tomato/bin/Tomato "$@"
+      EOF
+      chmod +x $SNAPCRAFT_PART_INSTALL/bin/tomato-launch
+
+      # Install desktop entry
+      mkdir -p $SNAPCRAFT_PART_INSTALL/meta/gui
+      cp shared/src/jvmMain/composeResources/drawable/logo.png $SNAPCRAFT_PART_INSTALL/meta/gui/icon.png
