@@ -72,6 +72,36 @@ jobs:
           archive: false
           path: ./desktopApp/build/compose/binaries/main-release/rpm/*.rpm
 
+      - name: Install Flatpak and flatpak-builder
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y flatpak flatpak-builder
+          flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          flatpak install --user -y flathub org.freedesktop.Platform//24.08 org.freedesktop.Sdk//24.08 org.freedesktop.Sdk.Extension.openjdk21//24.08
+
+      - name: Build Flatpak
+        run: |
+          flatpak-builder --force-clean --user --repo=flatpak-repo \
+            flatpak-build-dir flatpak/org.nsh07.pomodoro.yml
+          flatpak build-bundle flatpak-repo Tomato.flatpak org.nsh07.pomodoro
+
+      - name: Upload packaged Flatpak
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: ./Tomato.flatpak
+
+      # --- Snap ---
+      - name: Build Snap
+        uses: snapcore/action-build@v1
+        id: snapcraft
+
+      - name: Upload packaged Snap
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: ${{ steps.snapcraft.outputs.snap }}
+
   build-macos:
     runs-on: macos-latest
 
