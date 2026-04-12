@@ -30,11 +30,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
-import org.nsh07.pomodoro.OS
-import org.nsh07.pomodoro.currentOS
 import org.nsh07.pomodoro.ui.theme.CustomColors.listItemColors
 import org.nsh07.pomodoro.ui.theme.CustomColors.switchColors
 import org.nsh07.pomodoro.ui.theme.TomatoShapeDefaults.segmentedListItemShapes
+import org.nsh07.pomodoro.utils.OS
+import org.nsh07.pomodoro.utils.currentOS
 import tomato.shared.generated.resources.Res
 import tomato.shared.generated.resources.check
 

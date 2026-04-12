@@ -112,3 +112,9 @@ expect fun getDefaultAlarmTone(): String?
  * @param message message to be logged
  */
 expect fun logError(tag: String, message: String): Int
+
+enum class OS {
+    ANDROID, LINUX, WINDOWS, MACOS
+}
+
+expect val currentOS: OS

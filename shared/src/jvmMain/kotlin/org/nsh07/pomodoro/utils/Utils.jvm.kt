@@ -27,3 +27,12 @@ actual fun logError(tag: String, message: String): Int {
     System.err.println("$tag: $message")
     return 0
 }
+
+actual val currentOS: OS = run {
+    val osName = System.getProperty("os.name").lowercase()
+    when {
+        osName.contains("win") -> OS.WINDOWS
+        osName.contains("mac") -> OS.MACOS
+        else -> OS.LINUX
+    }
+}

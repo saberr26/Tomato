@@ -22,8 +22,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.nsh07.pomodoro.OS
-import org.nsh07.pomodoro.currentOS
 import org.nsh07.pomodoro.data.PreferenceRepository
 import org.nsh07.pomodoro.data.StateRepository
 
@@ -33,20 +31,6 @@ class PlatformSettingsViewModel(
 ) : ViewModel() {
     private val _settingsState = stateRepository.settingsState
     val settingsState = _settingsState.asStateFlow()
-
-    fun loadSettings() {
-        viewModelScope.launch {
-            // we disable custom window decorations on Windows by default to prevent window configuration bugs
-            val customWindowDecor = preferenceRepository.getBooleanPreference("custom_window_decor")
-                ?: preferenceRepository.saveBooleanPreference(
-                    "custom_window_decor",
-                    currentOS != OS.WINDOWS
-                )
-            _settingsState.update { currentState ->
-                currentState.copy(customWindowDecor = customWindowDecor)
-            }
-        }
-    }
 
     fun saveCustomWindowDecor(customWindowDecor: Boolean) {
         viewModelScope.launch {

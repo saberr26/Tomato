@@ -19,6 +19,8 @@ package org.nsh07.pomodoro.ui.settingsScreen.viewModel
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
+import org.nsh07.pomodoro.utils.OS
+import org.nsh07.pomodoro.utils.currentOS
 import org.nsh07.pomodoro.utils.getDefaultAlarmTone
 
 @Immutable
@@ -49,5 +51,5 @@ data class SettingsState(
 
     val alarmSoundUri: String? = getDefaultAlarmTone(),
 
-    val customWindowDecor: Boolean = true // Used on desktop only
+    val customWindowDecor: Boolean = currentOS != OS.WINDOWS
 )

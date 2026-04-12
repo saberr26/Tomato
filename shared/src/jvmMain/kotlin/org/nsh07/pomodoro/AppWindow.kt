@@ -51,6 +51,8 @@ import org.nsh07.pomodoro.ui.AppScreen
 import org.nsh07.pomodoro.ui.LocalContentWindowInsets
 import org.nsh07.pomodoro.ui.settingsScreen.viewModel.SettingsViewModel
 import org.nsh07.pomodoro.ui.theme.TomatoTheme
+import org.nsh07.pomodoro.utils.OS
+import org.nsh07.pomodoro.utils.currentOS
 import org.nsh07.pomodoro.utils.toColor
 import tomato.shared.generated.resources.Res
 import tomato.shared.generated.resources.app_name
@@ -77,7 +79,13 @@ fun ApplicationScope.AppWindow(
 
     CompositionLocalProvider(
         LocalViewModelStoreOwner provides windowViewModelStoreOwner,
-        LocalContentWindowInsets provides { WindowInsets(top = if (isMacOS) 28.dp else 32.dp) }
+        LocalContentWindowInsets provides {
+            WindowInsets(
+                top = if (settingsState.customWindowDecor)
+                    if (isMacOS) 28.dp else 32.dp
+                else 0.dp
+            )
+        }
     ) {
         if (isTraySupported) {
             AppSystemTray()
@@ -90,7 +98,7 @@ fun ApplicationScope.AppWindow(
                     onCloseRequest = { stateRepository.windowVisible.update { false } },
                     title = stringResource(Res.string.app_name),
                     icon = painterResource(Res.drawable.logo),
-                    undecorated = settingsState.customWindowDecor && !isMacOS, // we don't need custom decorations on macOS
+                    undecorated = settingsState.customWindowDecor && !isMacOS, // we don't need undecorated on macOS
                     transparent = settingsState.customWindowDecor && !isMacOS,
                     alwaysOnTop = BuildKonfig.DEBUG
                 ) {

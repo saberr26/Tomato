@@ -147,6 +147,12 @@ class StateRepository(private val preferenceRepository: PreferenceRepository) {
                 defaults.vibrationAmplitude
             )
 
+        val customWindowDecor = preferenceRepository.getBooleanPreference("custom_window_decor")
+            ?: preferenceRepository.saveBooleanPreference(
+                "custom_window_decor",
+                defaults.customWindowDecor
+            )
+
         settingsState.update { currentState ->
             currentState.copy(
                 focusTime = focusTime,
@@ -168,7 +174,8 @@ class StateRepository(private val preferenceRepository: PreferenceRepository) {
                 secureAod = secureAod,
                 vibrationOnDuration = vibrationOnDuration,
                 vibrationOffDuration = vibrationOffDuration,
-                vibrationAmplitude = vibrationAmplitude
+                vibrationAmplitude = vibrationAmplitude,
+                customWindowDecor = customWindowDecor
             )
         }
 
