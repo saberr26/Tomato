@@ -5,6 +5,8 @@ on:
     branches:
       - 'main'
       - 'dev'
+    tags:
+      - 'v*'
 
   pull_request:
     types: [ opened, synchronize, reopened ]
@@ -71,40 +73,6 @@ jobs:
         with:
           archive: false
           path: ./desktopApp/build/compose/binaries/main-release/rpm/*.rpm
-
-  package-linux-flatpak:
-    needs: build-linux
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-24.08
-      options: --privileged
-
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Build Flatpak
-        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
-        with:
-          bundle: Tomato.flatpak
-          manifest-path: flatpak/org.nsh07.pomodoro.yml
-          cache-key: flatpak-builder-${{ github.sha }}
-
-  package-linux-snap:
-    needs: build-linux
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Build Snap
-        uses: snapcore/action-build@v1
-        id: snapcraft
-
-      - name: Upload packaged Snap
-        uses: actions/upload-artifact@v7
-        with:
-          archive: false
-          path: ${{ steps.snapcraft.outputs.snap }}
   
   build-macos:
     runs-on: macos-latest
@@ -152,3 +120,68 @@ jobs:
         with:
           archive: false
           path: ./desktopApp/build/compose/binaries/main-release/exe/*.exe
+
+  package-linux-flatpak:
+    needs: build-linux
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-24.08
+      options: --privileged
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Get architecture
+        run: |
+          echo "ARCH=$(uname -m)" >> $GITHUB_ENV
+
+      - name: Build Flatpak
+        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+        with:
+          bundle: tomato-${{ github.ref_name }}.flatpak
+          manifest-path: flatpak/org.nsh07.pomodoro.yml
+          cache-key: flatpak-builder-${{ github.sha }}
+
+  package-linux-snap:
+    needs: build-linux
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Build Snap
+        uses: snapcore/action-build@v1
+        id: snapcraft
+
+      - name: Upload packaged Snap
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: ${{ steps.snapcraft.outputs.snap }}
+
+  create-release:
+    needs: [ build-linux, package-linux-flatpak, package-linux-snap, build-macos, build-windows ]
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v8
+        with:
+          path: artifacts/
+
+      - name: Create or Update Release Draft
+        uses: softprops/action-gh-release@v3
+        with:
+          draft: true
+          files: |
+            artifacts/**/*.deb
+            artifacts/**/*.rpm
+            artifacts/**/*.flatpak
+            artifacts/**/*.snap
+            artifacts/**/*.dmg
+            artifacts/**/*.exe
