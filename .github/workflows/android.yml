@@ -72,30 +72,29 @@ jobs:
           archive: false
           path: ./desktopApp/build/compose/binaries/main-release/rpm/*.rpm
 
-  package-linux:
+  package-linux-flatpak:
+    needs: build-linux
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-24.08
+      options: --privileged
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Build Flatpak
+        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+        with:
+          bundle: Tomato.flatpak
+          manifest-path: flatpak/org.nsh07.pomodoro.yml
+          cache-key: flatpak-builder-${{ github.sha }}
+
+  package-linux-snap:
     needs: build-linux
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v6
-      - name: Install Flatpak and flatpak-builder
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y flatpak flatpak-builder
-          flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-          flatpak install --user -y flathub org.freedesktop.Platform//24.08 org.freedesktop.Sdk//24.08 org.freedesktop.Sdk.Extension.openjdk21//24.08
-
-      - name: Build Flatpak
-        run: |
-          flatpak-builder --force-clean --user --repo=flatpak-repo \
-            flatpak-build-dir $GITHUB_WORKSPACE/flatpak/org.nsh07.pomodoro.yml
-          flatpak build-bundle flatpak-repo Tomato.flatpak org.nsh07.pomodoro
-
-      - name: Upload packaged Flatpak
-        uses: actions/upload-artifact@v7
-        with:
-          archive: false
-          path: ./Tomato.flatpak
 
       - name: Build Snap
         uses: snapcore/action-build@v1
