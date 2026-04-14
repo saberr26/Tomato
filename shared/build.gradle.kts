@@ -132,9 +132,9 @@ buildkonfig {
                 "DEBUG",
                 if (
                     gradle.startParameter.taskNames.any {
-                        it.contains("package", true)
+                        it.contains("run", true)
                     }
-                ) "false" else "true"
+                ) "true" else "false"
             )
         }
     }
