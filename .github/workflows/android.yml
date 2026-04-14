@@ -12,7 +12,7 @@ on:
     types: [ opened, synchronize, reopened ]
 
 jobs:
-  build-android:
+  build-android-debug:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,7 +28,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build debug APK with Gradle
+      - name: Build debug APK
         run: ./gradlew assembleFossDebug
 
       - name: Run tests
@@ -161,8 +161,48 @@ jobs:
           archive: false
           path: ${{ steps.snapcraft.outputs.snap }}
 
-  create-release:
-    needs: [ build-linux, package-linux-flatpak, package-linux-snap, build-macos, build-windows ]
+  build-android-release:
+    needs: build-android-debug
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          cache: gradle
+
+      - name: Decode Keystore
+        env:
+          ENCODED_STRING: ${{ secrets.SIGNING_KEY_STORE_BASE64 }}
+          SIGNING_KEY_STORE_PATH: androidApp/keystore.jks
+        run: echo "$ENCODED_STRING" | base64 -d > $SIGNING_KEY_STORE_PATH
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build release apk
+        env:
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+        run: ./gradlew assembleFossRelease
+
+      - name: Rename apk
+        run: mv ./androidApp/build/outputs/apk/foss/release/androidApp-foss-release.apk ./androidApp/build/outputs/apk/foss/release/tomato-${{ github.ref_name }}-release.apk
+
+      - name: Upload release APK artifact
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: ./androidApp/build/outputs/apk/foss/release/tomato-${{ github.ref_name }}-release.apk
+
+  create-release-draft:
+    needs: [ build-android-release, build-linux, package-linux-flatpak, package-linux-snap, build-macos, build-windows ]
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     permissions:
@@ -179,6 +219,7 @@ jobs:
         with:
           draft: true
           files: |
+            artifacts/**/*release.apk
             artifacts/**/*.deb
             artifacts/**/*.rpm
             artifacts/**/*.flatpak
