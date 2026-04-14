@@ -57,7 +57,11 @@ jobs:
         run: chmod +x gradlew
 
       - name: Package DEB archive
-        run: ./gradlew packageReleaseDeb
+        run: |
+          ./gradlew packageReleaseDeb
+          ref_name="${{ github.ref_name }}"
+          mv ./desktopApp/build/compose/binaries/main-release/deb/*.deb "./desktopApp/build/compose/binaries/main-release/deb/tomato-${ref_name////-}-$(uname -m).deb"
+
 
       - name: Upload packaged DEB archive
         uses: actions/upload-artifact@v7
@@ -66,7 +70,10 @@ jobs:
           path: ./desktopApp/build/compose/binaries/main-release/deb/*.deb
 
       - name: Package RPM archive
-        run: ./gradlew packageReleaseRpm
+        run: |
+          ./gradlew packageReleaseRpm
+          ref_name="${{ github.ref_name }}"
+          mv ./desktopApp/build/compose/binaries/main-release/rpm/*.rpm "./desktopApp/build/compose/binaries/main-release/rpm/tomato-${ref_name////-}-$(uname -m).rpm"
 
       - name: Upload packaged RPM archive
         uses: actions/upload-artifact@v7
@@ -91,7 +98,10 @@ jobs:
         run: chmod +x gradlew
 
       - name: Package DMG
-        run: ./gradlew packageReleaseDmg
+        run: |
+          ./gradlew packageReleaseDmg
+          ref_name="${{ github.ref_name }}"
+          mv ./desktopApp/build/compose/binaries/main-release/dmg/*.dmg "./desktopApp/build/compose/binaries/main-release/dmg/tomato-${ref_name////-}-$(uname -m).dmg"
 
       - name: Upload packaged DMG
         uses: actions/upload-artifact@v7
@@ -113,7 +123,11 @@ jobs:
           cache: gradle
 
       - name: Package EXE
-        run: ./gradlew.bat packageReleaseExe
+        shell: bash
+        run: |
+          ./gradlew packageReleaseExe
+          ref_name="${{ github.ref_name }}"
+          mv ./desktopApp/build/compose/binaries/main-release/exe/*.exe "./desktopApp/build/compose/binaries/main-release/exe/tomato-${ref_name////-}-$(uname -m).exe"
 
       - name: Upload packaged EXE
         uses: actions/upload-artifact@v7
@@ -139,9 +153,15 @@ jobs:
       - name: Build Flatpak
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
-          bundle: tomato-${{ github.ref_name }}.flatpak
+          bundle: tomato-${{ github.ref_name }}-${{ env.ARCH }}.flatpak
           manifest-path: flatpak/org.nsh07.pomodoro.yml
           cache-key: flatpak-builder-${{ github.sha }}
+
+      - name: Upload packaged Flatpak
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: tomato-${{ github.ref_name }}-${{ env.ARCH }}.flatpak
 
   package-linux-snap:
     needs: build-linux
@@ -155,11 +175,14 @@ jobs:
         uses: snapcore/action-build@v1
         id: snapcraft
 
+      - name: Rename Snap
+        run: mv ${{ steps.snapcraft.outputs.snap }} tomato-${{ github.ref_name }}-$(uname -m).snap
+
       - name: Upload packaged Snap
         uses: actions/upload-artifact@v7
         with:
           archive: false
-          path: ${{ steps.snapcraft.outputs.snap }}
+          path: tomato-${{ github.ref_name }}-*.snap
 
   build-android-release:
     needs: build-android-debug
@@ -199,7 +222,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           archive: false
-          path: ./androidApp/build/outputs/apk/foss/release/tomato-${{ github.ref_name }}-release.apk
+          path: ./androidApp/build/outputs/apk/foss/release/*.apk
 
   create-release-draft:
     needs: [ build-android-release, build-linux, package-linux-flatpak, package-linux-snap, build-macos, build-windows ]
