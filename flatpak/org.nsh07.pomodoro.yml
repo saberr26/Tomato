@@ -11,8 +11,10 @@ finish-args:
   - --socket=x11
   - --socket=wayland
   - --socket=pulseaudio
+  - --socket=session-bus
   - --share=ipc
   - --share=network
+  - --talk-name=org.kde.StatusNotifierWatcher
   - --device=dri
   - --env=PATH=/app/jre/bin:/app/bin:/usr/bin
   - --env=JAVA_HOME=/app/jre
