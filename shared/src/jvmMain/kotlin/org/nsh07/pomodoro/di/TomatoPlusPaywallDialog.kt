@@ -15,7 +15,7 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.nsh07.pomodoro.billing
+package org.nsh07.pomodoro.di
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

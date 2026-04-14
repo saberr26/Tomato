@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025-2026 Nishant Mishra
+ * Copyright (c) 2026 Nishant Mishra
  *
  * This file is part of Tomato - a minimalist pomodoro timer for Android.
  *
@@ -13,10 +13,17 @@
  *
  * You should have received a copy of the GNU General Public License along with Tomato.
  * If not, see <https://www.gnu.org/licenses/>.
- */package org.nsh07.pomodoro.billing
+ */
 
-import kotlinx.coroutines.flow.StateFlow
+package org.nsh07.pomodoro.di
 
-interface BillingManager {
-    val isPlus: StateFlow<Boolean>
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import org.nsh07.pomodoro.billing.BillingManager
+
+/**
+ * FOSS implementation of BillingManager
+ */
+class FossBillingManager : BillingManager {
+    override val isPlus = MutableStateFlow(true).asStateFlow()
 }

@@ -36,8 +36,6 @@ import org.koin.plugin.module.dsl.single
 import org.koin.plugin.module.dsl.viewModel
 import org.nsh07.pomodoro.BuildKonfig
 import org.nsh07.pomodoro.billing.BillingManager
-import org.nsh07.pomodoro.billing.FossBillingManager
-import org.nsh07.pomodoro.billing.TomatoPlusPaywallDialog
 import org.nsh07.pomodoro.data.AppDatabase
 import org.nsh07.pomodoro.data.AppPreferenceRepository
 import org.nsh07.pomodoro.data.AppStatRepository
@@ -49,8 +47,6 @@ import org.nsh07.pomodoro.data.StateRepository
 import org.nsh07.pomodoro.service.TimerHelper
 import org.nsh07.pomodoro.service.TimerManager
 import org.nsh07.pomodoro.timer.DesktopTimerHelper
-import org.nsh07.pomodoro.ui.settingsScreen.components.BottomButton
-import org.nsh07.pomodoro.ui.settingsScreen.components.TopButton
 import org.nsh07.pomodoro.ui.settingsScreen.screens.PlatformSettingsViewModel
 import org.nsh07.pomodoro.ui.settingsScreen.screens.backupRestore.viewModel.BackupRestoreViewModel
 import org.nsh07.pomodoro.ui.settingsScreen.viewModel.SettingsViewModel
