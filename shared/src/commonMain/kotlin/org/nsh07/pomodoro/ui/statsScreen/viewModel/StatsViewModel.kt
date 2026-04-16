@@ -44,6 +44,8 @@ import org.nsh07.pomodoro.data.Stat
 import org.nsh07.pomodoro.data.StatRepository
 import org.nsh07.pomodoro.di.AppInfo
 import org.nsh07.pomodoro.ui.Screen
+import org.nsh07.pomodoro.utils.OS
+import org.nsh07.pomodoro.utils.currentOS
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -68,7 +70,7 @@ class StatsViewModel(
 
     val chartZoomStates = List(3) {
         VicoZoomState(
-            zoomEnabled = true,
+            zoomEnabled = currentOS == OS.ANDROID,
             initialZoom = Zoom.fixed(),
             minZoom = Zoom.min(Zoom.Content, Zoom.fixed()),
             maxZoom = Zoom.max(Zoom.fixed(10f), Zoom.Content)
