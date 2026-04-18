@@ -7,7 +7,7 @@ source-code: https://github.com/nsh07/Tomato
 issues: https://github.com/nsh07/Tomato/issues
 website: https://github.com/nsh07/Tomato
 
-version: '1.8.5'
+version: '1.8.6-alpha01'
 summary: Minimalist, data-oriented pomodoro timer
 description: |
   Tomato is a minimalist Pomodoro timer based on Material 3 Expressive.

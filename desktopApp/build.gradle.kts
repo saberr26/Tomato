@@ -70,15 +70,22 @@ compose.desktop {
 
             linux {
                 iconFile = project.file("../shared/src/jvmMain/composeResources/drawable/logo.png")
-                debMaintainer = "nishant.28@outlook.com"
                 appRelease = libs.versions.app.versionCode.get()
                 appCategory = "TIMER"
+
+                val ogVersionName = libs.versions.app.versionName.get()
+
+                debMaintainer = "nishant.28@outlook.com"
+                debPackageVersion = ogVersionName.replace('-', '~')
+
                 rpmLicenseType = "GPLv3"
+                rpmPackageVersion = getNativePackageVersion(ogVersionName)
             }
             macOS {
                 iconFile = project.file("src/main/logo.icns")
                 bundleID = "org.nsh07.pomodoro"
                 appCategory = "public.app-category.productivity"
+                packageVersion = getNativePackageVersion(libs.versions.app.versionName.get())
             }
             windows {
                 iconFile = project.file("src/main/logo.ico")
@@ -87,6 +94,7 @@ compose.desktop {
                 dirChooser = true
                 perUserInstall = true
                 shortcut = true
+                packageVersion = getNativePackageVersion(libs.versions.app.versionName.get())
             }
         }
 
@@ -95,4 +103,46 @@ compose.desktop {
             optimize = true
         }
     }
+}
+
+/**
+ * Converts a SemVer string to a native-packager-friendly integer sequence.
+ *
+ * Example:
+ *
+ * ```
+ * "1.8.6-alpha01" -> "1.8.51"
+ * "1.8.6-beta02"  -> "1.8.552"
+ * "1.8.6"         -> "1.8.60"
+ * ```
+ */
+fun getNativePackageVersion(semanticVersion: String): String {
+    val regex = """^(\d+)\.(\d+)\.(\d+)(?:-([a-zA-Z]+)(\d+))?$""".toRegex()
+
+    val match = regex.matchEntire(semanticVersion)
+        ?: throw IllegalArgumentException("Version string does not match the expected format: $semanticVersion")
+
+    val (major, minor, patchStr, suffixType, suffixNumStr) = match.destructured
+    val patch = patchStr.toInt()
+
+    if (suffixType.isEmpty()) {
+        // Appending '0' ensures the final release is mathematically higher
+        // than any double-digit alpha/beta shifts (e.g., 60 > 51)
+        return "$major.$minor.${patch}0"
+    }
+
+    require(patch > 0) {
+        "Cannot shift patch version downwards for a pre-release because it is already 0 (e.g., 1.0.0-alpha01)."
+    }
+
+    val shiftedPatch = patch - 1
+    var buildNumber = suffixNumStr.toInt() // Automatically drops leading zeros (e.g., "01" -> 1)
+
+    // Optional: Offset beta versions so they upgrade correctly over alphas
+    // Alphas stay in the 1-49 range, Betas jump into the 50+ range.
+    if (suffixType.equals("beta", ignoreCase = true)) {
+        buildNumber += 50
+    }
+
+    return "$major.$minor.$shiftedPatch$buildNumber"
 }

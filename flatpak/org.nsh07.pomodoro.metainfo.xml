@@ -78,4 +78,20 @@
     <categories>
         <category>Utility</category>
     </categories>
+
+    <releases>
+        <release date="2026-04-18" version="1.8.6-alpha01">
+            <description>
+                <p>Enhancements:</p>
+                <ul>
+                    <li>Translation updates (thanks to contributors on Weblate)</li>
+                </ul>
+                <p>
+                    This release marks a milestone for Tomato: Tomato is now available on Desktop
+                    (Linux, Mac and Windows). Try it out from the releases page on GitHub. It will
+                    soon be available on Flathub and Snap Store for download on Linux as well.
+                </p>
+            </description>
+        </release>
+    </releases>
 </component>
