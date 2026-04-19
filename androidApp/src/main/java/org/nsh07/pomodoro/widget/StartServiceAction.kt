@@ -20,6 +20,7 @@ package org.nsh07.pomodoro.widget
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.glance.GlanceId
 import androidx.glance.action.ActionParameters
 import androidx.glance.appwidget.GlanceAppWidgetManager
@@ -40,7 +41,12 @@ class StartServiceAction : ActionCallback {
             putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
         }
 
-        context.startForegroundService(serviceIntent)
+        try {
+            context.startForegroundService(serviceIntent)
+        } catch (e: Exception) {
+            Log.e("StartServiceAction", "Cannot start service: ${e.message}")
+            e.printStackTrace()
+        }
     }
 
     companion object {

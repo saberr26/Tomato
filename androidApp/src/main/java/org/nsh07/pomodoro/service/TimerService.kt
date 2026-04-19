@@ -31,6 +31,7 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import android.service.quicksettings.TileService
+import android.util.Log
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -98,6 +99,7 @@ class TimerService : Service(), KoinComponent {
 
     override fun onCreate() {
         super.onCreate()
+        updateProgressSegments()
         stateRepository.timerState.update { it.copy(serviceRunning = true) }
         alarm = initializeMediaPlayer()
     }
@@ -129,8 +131,13 @@ class TimerService : Service(), KoinComponent {
 
         when (intent?.action) {
             Actions.TOGGLE.toString() -> {
-                startForegroundService()
-                toggleTimer()
+                try {
+                    startForegroundService()
+                    toggleTimer()
+                } catch (e: Exception) {
+                    Log.e("TimerService", "Cannot start service: ${e.message}")
+                    e.printStackTrace()
+                }
             }
 
             Actions.RESET.toString() -> {
@@ -260,9 +267,7 @@ class TimerService : Service(), KoinComponent {
                 .setShortCriticalText(
                     if (timerState.timerMode == TimerMode.FOCUS && timerState.infiniteFocus)
                         millisecondsToStr(
-                            (Long.MAX_VALUE - stateRepository.time.value).coerceAtLeast(
-                                0
-                            )
+                            (Long.MAX_VALUE - stateRepository.time.value).coerceAtLeast(0)
                         )
                     else millisecondsToStr(stateRepository.time.value.coerceAtLeast(0))
                 )
@@ -372,8 +377,10 @@ class TimerService : Service(), KoinComponent {
         autoAlarmStopScope?.cancel()
 
         if (settingsState.alarmEnabled) {
-            alarm?.pause()
-            alarm?.seekTo(0)
+            alarm?.let {
+                if (it.isPlaying) it.pause()
+                it.seekTo(0)
+            }
         }
 
         if (settingsState.vibrateEnabled) {
@@ -409,6 +416,12 @@ class TimerService : Service(), KoinComponent {
         val settingsState = _settingsState.value
         return try {
             MediaPlayer().apply {
+                setOnErrorListener { mp, what, extra ->
+                    mp.reset()
+                    Log.e("TimerService", "MediaPlayer error: $what, $extra")
+                    true
+                }
+
                 setAudioAttributes(
                     AudioAttributes.Builder()
                         .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
@@ -418,6 +431,7 @@ class TimerService : Service(), KoinComponent {
                         )
                         .build()
                 )
+
                 settingsState.alarmSoundUri?.let {
                     setDataSource(applicationContext, it.toUri())
                     prepare()

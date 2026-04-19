@@ -206,7 +206,7 @@ fun FocusBreakRatioVisualization(
     if (focusDuration + breakDuration > 0) {
         val shapes = shapes
         val focusPercentage = ((focusDuration / (focusDuration.toFloat() + breakDuration)) * 100)
-        val breakPercentage = 100 - focusPercentage
+        val breakPercentage = 100f - focusPercentage
 
         val focusShape = remember(breakDuration) {
             if (breakDuration > 0) shapes.large.copy(
@@ -232,7 +232,7 @@ fun FocusBreakRatioVisualization(
                 color = colorScheme.primary,
                 modifier = Modifier.padding(end = 6.dp)
             )
-            if (focusDuration > 0) Spacer(
+            if (focusPercentage > 0) Spacer(
                 Modifier
                     .weight(focusPercentage)
                     .height(height)
@@ -241,7 +241,7 @@ fun FocusBreakRatioVisualization(
                         focusShape
                     )
             )
-            if (breakDuration > 0) Spacer(
+            if (breakPercentage > 0) Spacer(
                 Modifier
                     .weight(breakPercentage)
                     .height(height)
@@ -290,6 +290,10 @@ fun HorizontalStackedBarPreview() {
                         gap = 2.dp,
                     )
                 }
+
+                FocusBreakRatioVisualization(90, 10, Modifier.padding(16.dp))
+                FocusBreakRatioVisualization(100, 0, Modifier.padding(16.dp))
+                FocusBreakRatioVisualization(0, 100, Modifier.padding(16.dp))
             }
         }
     }
