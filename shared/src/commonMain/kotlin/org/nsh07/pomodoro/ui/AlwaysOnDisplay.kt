@@ -62,7 +62,6 @@ import org.nsh07.pomodoro.ui.theme.TomatoTheme
 import org.nsh07.pomodoro.ui.timerScreen.TimerScreen
 import org.nsh07.pomodoro.ui.timerScreen.viewModel.TimerMode
 import org.nsh07.pomodoro.ui.timerScreen.viewModel.TimerState
-import kotlin.random.Random
 
 /**
  * Always On Display composable. Must be called within a [SharedTransitionScope] which allows
@@ -71,7 +70,6 @@ import kotlin.random.Random
  * @param timerState [TimerState] instance. This must be the same instance as the one used on the
  * root [TimerScreen] composable
  * @param progress lambda that returns the current progress of the clock
- * randomized offset for the clock to allow smooth motion with sharedBounds
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -121,32 +119,24 @@ fun SharedTransitionScope.AlwaysOnDisplay(
         animationSpec = motionScheme.slowEffectsSpec()
     )
 
-    var x by remember {
-        mutableIntStateOf(
-            Random.nextInt(
-                16.dp.toIntPx(density),
-                windowInfo.containerSize.width - 266.dp.toIntPx(density)
-            )
-        )
+    val elementSize = 250.dp.toIntPx(density)
+    val margin = 16.dp.toIntPx(density)
+
+    var x by remember(windowInfo.containerSize) {
+        mutableIntStateOf(windowInfo.containerSize.width / 2 - elementSize / 2)
     }
-    var y by remember {
-        mutableIntStateOf(
-            Random.nextInt(
-                16.dp.toIntPx(density),
-                windowInfo.containerSize.height - 266.dp.toIntPx(density)
-            )
-        )
+    var y by remember(windowInfo.containerSize) {
+        mutableIntStateOf(windowInfo.containerSize.height / 2 - elementSize / 2)
     }
 
-    var xIncrement = 2
-    var yIncrement = 2
+    var xIncrement by remember { mutableIntStateOf(2) }
+    var yIncrement by remember { mutableIntStateOf(2) }
 
-    LaunchedEffect(timerState.timeStr[1]) { // Randomize position every minute
-        if (sharedElementTransitionComplete) {
-            val elementSize = 266.dp.toIntPx(density)
-            if (windowInfo.containerSize.width - elementSize < x + xIncrement || x + xIncrement < 16)
+    LaunchedEffect(timerState.timeStr[1]) { // Increment position every minute
+        if (sharedElementTransitionComplete && windowInfo.containerSize.width > 0 && windowInfo.containerSize.height > 0) {
+            if (windowInfo.containerSize.width - elementSize - margin < x + xIncrement || x + xIncrement < margin)
                 xIncrement = -xIncrement
-            if (windowInfo.containerSize.height - elementSize < y + yIncrement || y + yIncrement < 16)
+            if (windowInfo.containerSize.height - elementSize - margin < y + yIncrement || y + yIncrement < margin)
                 yIncrement = -yIncrement
             x += xIncrement
             y += yIncrement
