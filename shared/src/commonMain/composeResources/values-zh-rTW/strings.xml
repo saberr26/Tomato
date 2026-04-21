@@ -149,4 +149,5 @@
     <string name="cancel">取消</string>
     <string name="open_tomato">開啟 Tomato</string>
     <string name="quit_tomato">結束 Tomato</string>
+    <string name="advanced">進階</string>
 </resources>

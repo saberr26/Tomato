@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~ Copyright (c) 2026 Nishant Mishra
   ~
   ~ This file is part of Tomato - a minimalist pomodoro timer for Android.
@@ -13,8 +14,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License along with Tomato.
   ~ If not, see <https://www.gnu.org/licenses/>.
-  -->
-<resources>
+  --><resources>
     <string name="start">Başlat</string>
     <string name="stop">Durdur</string>
     <string name="focus">Odak</string>
@@ -147,4 +147,5 @@
     <string name="cancel">İptal</string>
     <string name="open_tomato">Tomato\u0027yu Aç</string>
     <string name="quit_tomato">Tomato\u0027dan Çık</string>
+    <string name="advanced">Gelişmiş</string>
 </resources>

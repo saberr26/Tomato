@@ -146,4 +146,5 @@
     <string name="cancel">Zrušit</string>
     <string name="open_tomato">Otevřít Tomato</string>
     <string name="quit_tomato">Ukončit Tomato</string>
+    <string name="advanced">Pokročilé</string>
 </resources>

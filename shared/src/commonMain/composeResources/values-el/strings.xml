@@ -127,7 +127,7 @@
     <string name="today_widget_desc">Στατιστικά συγκέντρωσης της ημέρας</string>
     <string name="total">συνολικά</string>
     <string name="vibration_strength">Δύναμη</string>
-    <string name="daily_focus_goal">Καθημερινός στόχος συγκέντρωσης</string>
+    <string name="daily_focus_goal">Καθημερινός στόχος εστίασης</string>
     <string name="milliseconds_format">%1$dms</string>
     <string name="backup_and_restore">Αντίγραφα ασφαλείας και επαναφορά</string>
     <string name="backup">Αντίγραφα ασφαλείας</string>
@@ -145,4 +145,6 @@
     <string name="infinite">Άπειρο</string>
     <string name="infinite_focus">Άπειρη εστίαση</string>
     <string name="cancel">Ακύρωση</string>
+    <string name="settings_infinite_focus_tip">Πάτα παρατεταμένα στο χρονόμετρο για να ενεργοποιήσεις την άπειρη εστίαση</string>
+    <string name="advanced">Προχωρημένα</string>
 </resources>

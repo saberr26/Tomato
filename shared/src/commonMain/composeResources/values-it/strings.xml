@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~ Copyright (c) 2026 Nishant Mishra
   ~
   ~ This file is part of Tomato - a minimalist pomodoro timer for Android.
@@ -13,8 +14,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License along with Tomato.
   ~ If not, see <https://www.gnu.org/licenses/>.
-  -->
-<resources>
+  --><resources>
     <string name="start">Inizia</string>
     <string name="stop">Ferma</string>
     <string name="focus">Concentrati</string>
@@ -92,4 +92,6 @@
     <string name="dnd_permission_message">Abilita l\u0027autorizzazione per %1$s</string>
     <string name="focus_break_ratio">Rapporto concentrazione-pausa</string>
     <string name="focus_breakdown_desc">Durata media della concentrazione nei diversi momenti della giornata</string>
+    <string name="about">Info</string>
+    <string name="focus_breakdown">Analisi della concentrazione</string>
 </resources>
