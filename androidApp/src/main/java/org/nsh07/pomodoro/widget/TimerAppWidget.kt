@@ -94,7 +94,7 @@ class TimerAppWidget : GlanceAppWidget(), KoinComponent {
         Box(
             modifier = GlanceModifier
                 .fillMaxSize()
-                .background(Color.Transparent)
+                .background(ColorProvider(Color.Transparent))
                 .clickable(actionStartActivity<MainActivity>()),
             contentAlignment = Alignment.Center
         ) {
@@ -103,11 +103,11 @@ class TimerAppWidget : GlanceAppWidget(), KoinComponent {
                     contentAlignment = Alignment.Center,
                     modifier = GlanceModifier
                         .size(circleSize)
-                        .background(
-                            ImageProvider(R.drawable.rounded_full),
-                            colorFilter = ColorFilter.tint(
-                                if (transparentWidgets) ColorProvider(Color.Transparent)
-                                else colors.widgetBackground
+                        .then(
+                            if (transparentWidgets) GlanceModifier
+                            else GlanceModifier.background(
+                                ImageProvider(R.drawable.rounded_full),
+                                colorFilter = ColorFilter.tint(colors.widgetBackground)
                             )
                         )
                 ) {
