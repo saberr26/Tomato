@@ -21,6 +21,8 @@ import android.content.Context
 import android.os.Build
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Color
@@ -59,6 +61,7 @@ import androidx.glance.material3.ColorProviders
 import androidx.glance.preview.ExperimentalGlancePreviewApi
 import androidx.glance.preview.Preview
 import androidx.glance.text.FontWeight
+import androidx.glance.unit.ColorProvider
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
@@ -67,6 +70,7 @@ import org.nsh07.pomodoro.MainActivity
 import org.nsh07.pomodoro.R
 import org.nsh07.pomodoro.data.Stat
 import org.nsh07.pomodoro.data.StatRepository
+import org.nsh07.pomodoro.data.StateRepository
 import org.nsh07.pomodoro.ui.theme.lightScheme
 import org.nsh07.pomodoro.utils.millisecondsToHoursMinutes
 import org.nsh07.pomodoro.widget.TomatoWidgetSize.Width4
@@ -106,7 +110,7 @@ class HistoryAppWidget : GlanceAppWidget(), KoinComponent {
         val size = LocalSize.current
         val scope = rememberCoroutineScope()
         val roundedCornersSupported = Build.VERSION.SDK_INT >= 31
-        val widgetBackground = if (transparentWidgets) Color.Transparent else colors.widgetBackground
+        val widgetBackground = if (transparentWidgets) ColorProvider(Color.Transparent) else colors.widgetBackground
         Column(
             modifier =
                 GlanceModifier

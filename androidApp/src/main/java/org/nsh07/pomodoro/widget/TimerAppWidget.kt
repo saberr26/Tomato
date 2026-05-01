@@ -48,6 +48,7 @@ import androidx.glance.layout.Row
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.size
 import androidx.glance.material3.ColorProviders
+import androidx.glance.unit.ColorProvider
 import androidx.glance.preview.ExperimentalGlancePreviewApi
 import androidx.glance.preview.Preview
 import org.koin.core.component.KoinComponent
@@ -105,7 +106,7 @@ class TimerAppWidget : GlanceAppWidget(), KoinComponent {
                         .background(
                             ImageProvider(R.drawable.rounded_full),
                             colorFilter = ColorFilter.tint(
-                                if (transparentWidgets) Color.Transparent
+                                if (transparentWidgets) ColorProvider(Color.Transparent)
                                 else colors.widgetBackground
                             )
                         )
