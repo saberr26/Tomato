@@ -83,31 +83,34 @@ class TodayAppWidget : GlanceAppWidget(), KoinComponent {
         id: GlanceId
     ) {
         val statRepository: StatRepository = get()
+        val stateRepository: StateRepository = get()
         val stat = statRepository.getTodayStat().first()
             ?: Stat(LocalDate.now(), 0, 0, 0, 0, 0)
 
         provideContent {
+            val settingsState by stateRepository.settingsState.collectAsState()
             key(LocalSize.current) {
                 GlanceTheme {
-                    Content(stat)
+                    Content(stat, settingsState.transparentWidgets)
                 }
             }
         }
     }
 
     @Composable
-    private fun Content(stat: Stat) {
+    private fun Content(stat: Stat, transparentWidgets: Boolean) {
         val context = LocalContext.current
         val size = LocalSize.current
         val scope = rememberCoroutineScope()
+        val widgetBackground = if (transparentWidgets) Color.Transparent else colors.widgetBackground
         Box(
             contentAlignment = Alignment.TopEnd,
             modifier = GlanceModifier
                 .then(
-                    if (Build.VERSION.SDK_INT >= 31) GlanceModifier.background(colors.widgetBackground)
+                    if (Build.VERSION.SDK_INT >= 31) GlanceModifier.background(widgetBackground)
                     else GlanceModifier.background(
                         ImageProvider(R.drawable.rounded_24dp),
-                        colorFilter = ColorFilter.tint(colors.widgetBackground)
+                        colorFilter = ColorFilter.tint(widgetBackground)
                     )
                 )
                 .padding(16.dp)
@@ -203,14 +206,15 @@ class TodayAppWidget : GlanceAppWidget(), KoinComponent {
                     GlanceModifier.cornerRadius(32.dp)
                 ) {
                     Content(
-                        Stat(
+                        stat = Stat(
                             date = LocalDate.of(2026, 3, 12),
                             focusTimeQ1 = 1617943,
                             focusTimeQ2 = 5704591,
                             focusTimeQ3 = 556490,
                             focusTimeQ4 = 1200498,
                             breakTime = 3939448
-                        )
+                        ),
+                        transparentWidgets = false
                     )
                 }
             }

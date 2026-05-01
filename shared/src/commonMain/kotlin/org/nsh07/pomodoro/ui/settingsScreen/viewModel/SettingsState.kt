@@ -36,6 +36,7 @@ data class SettingsState(
     val singleProgressBar: Boolean = false,
     val autostartNextSession: Boolean = false,
     val secureAod: Boolean = true,
+    val transparentWidgets: Boolean = false,
     val isShowingEraseDataDialog: Boolean = false,
 
     val vibrationOnDuration: Long = 1000L,

@@ -106,6 +106,7 @@ class SettingsViewModel(
             is SettingsAction.SaveSingleProgressBar -> saveSingleProgressBar(action.enabled)
             is SettingsAction.SaveAutostartNextSession -> saveAutostartNextSession(action.enabled)
             is SettingsAction.SaveSecureAod -> saveSecureAod(action.enabled)
+            is SettingsAction.SaveTransparentWidgets -> saveTransparentWidgets(action.enabled)
             is SettingsAction.SaveColorScheme -> saveColorScheme(action.color)
             is SettingsAction.SaveTheme -> saveTheme(action.theme)
             is SettingsAction.SaveBlackTheme -> saveBlackTheme(action.enabled)
@@ -356,6 +357,18 @@ class SettingsViewModel(
             preferenceRepository.saveBooleanPreference(
                 "secure_aod",
                 secureAod
+            )
+        }
+    }
+
+    private fun saveTransparentWidgets(enabled: Boolean) {
+        viewModelScope.launch {
+            _settingsState.update { currentState ->
+                currentState.copy(transparentWidgets = enabled)
+            }
+            preferenceRepository.saveBooleanPreference(
+                "transparent_widgets",
+                enabled
             )
         }
     }

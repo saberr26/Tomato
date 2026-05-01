@@ -72,14 +72,15 @@ class TimerAppWidget : GlanceAppWidget(), KoinComponent {
         val stateRepository: StateRepository = get()
         provideContent {
             val timerState by stateRepository.timerState.collectAsState()
+            val settingsState by stateRepository.settingsState.collectAsState()
             GlanceTheme {
-                Content(timerState)
+                Content(timerState, settingsState.transparentWidgets)
             }
         }
     }
 
     @Composable
-    private fun Content(timerState: TimerState) {
+    private fun Content(timerState: TimerState, transparentWidgets: Boolean) {
         val size = LocalSize.current
         val context = LocalContext.current
         val circleSize = minOf(256.dp, size.width, size.height)
@@ -103,7 +104,10 @@ class TimerAppWidget : GlanceAppWidget(), KoinComponent {
                         .size(circleSize)
                         .background(
                             ImageProvider(R.drawable.rounded_full),
-                            colorFilter = ColorFilter.tint(colors.widgetBackground)
+                            colorFilter = ColorFilter.tint(
+                                if (transparentWidgets) Color.Transparent
+                                else colors.widgetBackground
+                            )
                         )
                 ) {
                     val clockHeight = (circleSize.value * 0.25f)
@@ -199,7 +203,8 @@ class TimerAppWidget : GlanceAppWidget(), KoinComponent {
         GlanceTheme(colors = ColorProviders(lightScheme)) {
             Box(GlanceModifier.background(Color.White)) {
                 Content(
-                    timerState = TimerState()
+                    timerState = TimerState(),
+                    transparentWidgets = false
                 )
             }
         }

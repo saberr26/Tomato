@@ -81,34 +81,41 @@ class HistoryAppWidget : GlanceAppWidget(), KoinComponent {
         id: GlanceId
     ) {
         val statRepository: StatRepository = get()
+        val stateRepository: StateRepository = get()
         val history = statRepository.getLastNDaysStats(30).first().reversed()
 
         provideContent {
+            val settingsState by stateRepository.settingsState.collectAsState()
             val size = LocalSize.current
             val history = history.takeLast(((size.width.value - 32) / 24).toInt())
             key(size) {
                 GlanceTheme {
-                    Content(history, history.maxBy { it.totalFocusTime() }.totalFocusTime())
+                    Content(
+                        history,
+                        history.maxBy { it.totalFocusTime() }.totalFocusTime(),
+                        settingsState.transparentWidgets
+                    )
                 }
             }
         }
     }
 
     @Composable
-    private fun Content(history: List<Stat>, maxFocus: Long) {
+    private fun Content(history: List<Stat>, maxFocus: Long, transparentWidgets: Boolean) {
         val context = LocalContext.current
         val size = LocalSize.current
         val scope = rememberCoroutineScope()
         val roundedCornersSupported = Build.VERSION.SDK_INT >= 31
+        val widgetBackground = if (transparentWidgets) Color.Transparent else colors.widgetBackground
         Column(
             modifier =
                 GlanceModifier
                     .fillMaxSize()
                     .then(
-                        if (roundedCornersSupported) GlanceModifier.background(colors.widgetBackground)
+                        if (roundedCornersSupported) GlanceModifier.background(widgetBackground)
                         else GlanceModifier.background(
                             ImageProvider(R.drawable.rounded_24dp),
-                            colorFilter = ColorFilter.tint(colors.widgetBackground)
+                            colorFilter = ColorFilter.tint(widgetBackground)
                         )
                     )
                     .clickable(actionStartActivity<MainActivity>())
@@ -332,7 +339,8 @@ class HistoryAppWidget : GlanceAppWidget(), KoinComponent {
                 ) {
                     Content(
                         history = history,
-                        maxFocus = history.maxBy { it.totalFocusTime() }.totalFocusTime()
+                        maxFocus = history.maxBy { it.totalFocusTime() }.totalFocusTime(),
+                        transparentWidgets = false
                     )
                 }
             }
