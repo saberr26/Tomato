@@ -100,6 +100,16 @@ fun AppearanceSettings(
     val barColors = if (widthExpanded) detailPaneTopBarColors
     else topBarColors
 
+    var showIconDialog by remember { mutableStateOf(false) }
+
+    if (showIconDialog) {
+        IconCustomizationDialog(
+            settingsState = settingsState,
+            onAction = onAction,
+            onDismiss = { showIconDialog = false }
+        )
+    }
+
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -229,6 +239,30 @@ fun AppearanceSettings(
                         onClick = { onAction(SettingsAction.SaveTransparentWidgets(it)) }
                     )
                     SegmentedListItem(
+                        onClick = { showIconDialog = true },
+                        leadingContent = {
+                            Icon(painterResource(item.icon), contentDescription = null)
+                        },
+                        content = { Text("Icon customization") },
+                        supportingContent = { Text("Configure app logo and widget icon colors") },
+                        trailingContent = {
+                            Icon(painterResource(Res.drawable.palette), contentDescription = null)
+                        },
+                        colors = listItemColors,
+                        enabled = isPlus,
+                        shapes = segmentedListItemShapes(3, 5)
+                    )
+                }
+
+                item {
+                    val item = SettingsSwitchItem(
+                        checked = settingsState.transparentWidgets,
+                        icon = Res.drawable.clear,
+                        label = Res.string.transparent_widgets,
+                        description = Res.string.transparent_widgets_desc,
+                        onClick = { onAction(SettingsAction.SaveTransparentWidgets(it)) }
+                    )
+                    SegmentedListItem(
                         onClick = { item.onClick(!item.checked) },
                         leadingContent = {
                             Icon(painterResource(item.icon), contentDescription = null)
@@ -260,7 +294,7 @@ fun AppearanceSettings(
                         },
                         colors = listItemColors,
                         enabled = isPlus,
-                        shapes = segmentedListItemShapes(3, 4)
+                        shapes = segmentedListItemShapes(4, 5)
                     )
                 }
 

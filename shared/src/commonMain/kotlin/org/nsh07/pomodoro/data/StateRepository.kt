@@ -135,6 +135,12 @@ class StateRepository(private val preferenceRepository: PreferenceRepository) {
                 defaults.transparentWidgets
             )
 
+        val iconColor = preferenceRepository.getStringPreference("icon_color")
+            ?: preferenceRepository.saveStringPreference("icon_color", defaults.iconColor)
+
+        val iconUseDynamic = preferenceRepository.getBooleanPreference("icon_use_dynamic")
+            ?: preferenceRepository.saveBooleanPreference("icon_use_dynamic", defaults.iconUseDynamic)
+
         val vibrationOnDuration = (preferenceRepository.getIntPreference("vibration_on_duration")
             ?: preferenceRepository.saveIntPreference(
                 "vibration_on_duration",
@@ -179,6 +185,8 @@ class StateRepository(private val preferenceRepository: PreferenceRepository) {
                 autostartNextSession = autostartNextSession,
                 secureAod = secureAod,
                 transparentWidgets = transparentWidgets,
+                iconColor = iconColor,
+                iconUseDynamic = iconUseDynamic,
                 vibrationOnDuration = vibrationOnDuration,
                 vibrationOffDuration = vibrationOffDuration,
                 vibrationAmplitude = vibrationAmplitude,

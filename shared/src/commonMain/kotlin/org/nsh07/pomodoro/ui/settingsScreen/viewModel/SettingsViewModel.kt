@@ -111,6 +111,9 @@ class SettingsViewModel(
             is SettingsAction.SaveTheme -> saveTheme(action.theme)
             is SettingsAction.SaveBlackTheme -> saveBlackTheme(action.enabled)
             is SettingsAction.SaveAodEnabled -> saveAodEnabled(action.enabled)
+            is SettingsAction.SaveIconColor -> saveIconColor(action.color)
+            is SettingsAction.SaveIconUseDynamic -> saveIconUseDynamic(action.useDynamic)
+            is SettingsAction.ResetIconColors -> resetIconColors()
 
             is SettingsAction.SaveFocusGoal -> saveFocusGoal(action.goal)
 
@@ -283,6 +286,38 @@ class SettingsViewModel(
                 currentState.copy(colorScheme = colorScheme.toString())
             }
             preferenceRepository.saveStringPreference("color_scheme", colorScheme.toString())
+        }
+    }
+
+    private fun saveIconColor(color: Color) {
+        viewModelScope.launch {
+            _settingsState.update { currentState ->
+                currentState.copy(iconColor = color.toString())
+            }
+            preferenceRepository.saveStringPreference("icon_color", color.toString())
+        }
+    }
+
+    private fun saveIconUseDynamic(useDynamic: Boolean) {
+        viewModelScope.launch {
+            _settingsState.update { currentState ->
+                currentState.copy(iconUseDynamic = useDynamic)
+            }
+            preferenceRepository.saveBooleanPreference("icon_use_dynamic", useDynamic)
+        }
+    }
+
+    private fun resetIconColors() {
+        viewModelScope.launch {
+            val defaults = SettingsState()
+            _settingsState.update { currentState ->
+                currentState.copy(
+                    iconColor = defaults.iconColor,
+                    iconUseDynamic = defaults.iconUseDynamic
+                )
+            }
+            preferenceRepository.saveStringPreference("icon_color", defaults.iconColor)
+            preferenceRepository.saveBooleanPreference("icon_use_dynamic", defaults.iconUseDynamic)
         }
     }
 
