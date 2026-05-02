@@ -38,14 +38,17 @@ import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.action.actionRunCallback
+import androidx.glance.appwidget.appWidgetBackground
 import androidx.glance.appwidget.components.CircleIconButton
 import androidx.glance.appwidget.components.SquareIconButton
+import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.provideContent
 import androidx.glance.background
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
 import androidx.glance.layout.Row
 import androidx.glance.layout.fillMaxSize
+import androidx.glance.layout.padding
 import androidx.glance.layout.size
 import androidx.glance.material3.ColorProviders
 import androidx.glance.unit.ColorProvider
@@ -84,7 +87,7 @@ class TimerAppWidget : GlanceAppWidget(), KoinComponent {
     private fun Content(timerState: TimerState, transparentWidgets: Boolean) {
         val size = LocalSize.current
         val context = LocalContext.current
-        val circleSize = minOf(256.dp, size.width, size.height)
+        val circleSize = minOf(256.dp, size.width - 8.dp, size.height - 8.dp)
         val breakMode =
             timerState.timerMode == TimerMode.SHORT_BREAK || timerState.timerMode == TimerMode.LONG_BREAK
 
@@ -94,7 +97,10 @@ class TimerAppWidget : GlanceAppWidget(), KoinComponent {
         Box(
             modifier = GlanceModifier
                 .fillMaxSize()
+                .padding(4.dp)
+                .appWidgetBackground()
                 .background(ColorProvider(Color.Transparent))
+                .cornerRadius(0.dp)
                 .clickable(actionStartActivity<MainActivity>()),
             contentAlignment = Alignment.Center
         ) {
