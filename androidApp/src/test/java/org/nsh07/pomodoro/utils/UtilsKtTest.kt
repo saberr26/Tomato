@@ -66,7 +66,7 @@ class UtilsKtTest {
 
     @Test
     fun `millisecondsToStr Eastern Arabic numerals`() {
-        Locale.setDefault(Locale.of("ar"))
+        Locale.setDefault(Locale.of("ar", "SA"))
         assertEquals(
             "٢٥:٠٠",
             millisecondsToStr(25 * 60 * 1000)
