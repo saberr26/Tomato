@@ -50,6 +50,9 @@ data class SettingsState(
 
     val sessionLength: Int = 4,
 
+    val iconColor: String = Color.White.toString(),
+    val iconUseDynamic: Boolean = true,
+
     val alarmSoundUri: String? = getDefaultAlarmTone(),
 
     val customWindowDecor: Boolean = currentOS != OS.WINDOWS

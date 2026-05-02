@@ -42,6 +42,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -53,7 +57,10 @@ import org.jetbrains.compose.resources.stringResource
 import org.nsh07.pomodoro.ui.mergePaddingValues
 import org.nsh07.pomodoro.ui.settingsScreen.SettingsSwitchItem
 import org.nsh07.pomodoro.ui.settingsScreen.components.ColorSchemePickerListItem
+import org.nsh07.pomodoro.ui.settingsScreen.components.IconCustomizationDialog
 import org.nsh07.pomodoro.ui.settingsScreen.components.PlusDivider
+import org.nsh07.pomodoro.ui.settingsScreen.components.SliderListItem
+
 import org.nsh07.pomodoro.ui.settingsScreen.components.ThemePickerListItem
 import org.nsh07.pomodoro.ui.settingsScreen.viewModel.SettingsAction
 import org.nsh07.pomodoro.ui.settingsScreen.viewModel.SettingsState
@@ -76,6 +83,7 @@ import tomato.shared.generated.resources.black_theme_desc
 import tomato.shared.generated.resources.check
 import tomato.shared.generated.resources.clear
 import tomato.shared.generated.resources.contrast
+import tomato.shared.generated.resources.palette
 import tomato.shared.generated.resources.settings
 import tomato.shared.generated.resources.transparent_widgets
 import tomato.shared.generated.resources.transparent_widgets_desc
@@ -99,6 +107,16 @@ fun AppearanceSettings(
 
     val barColors = if (widthExpanded) detailPaneTopBarColors
     else topBarColors
+
+    var showIconDialog by remember { mutableStateOf(false) }
+
+    if (showIconDialog) {
+        IconCustomizationDialog(
+            settingsState = settingsState,
+            onAction = onAction,
+            onDismiss = { showIconDialog = false }
+        )
+    }
 
     Box(
         contentAlignment = Alignment.Center,
@@ -229,6 +247,30 @@ fun AppearanceSettings(
                         onClick = { onAction(SettingsAction.SaveTransparentWidgets(it)) }
                     )
                     SegmentedListItem(
+                        onClick = { showIconDialog = true },
+                        leadingContent = {
+                            Icon(painterResource(item.icon), contentDescription = null)
+                        },
+                        content = { Text("Icon customization") },
+                        supportingContent = { Text("Configure app logo and widget icon colors") },
+                        trailingContent = {
+                            Icon(painterResource(Res.drawable.palette), contentDescription = null)
+                        },
+                        colors = listItemColors,
+                        enabled = isPlus,
+                        shapes = segmentedListItemShapes(3, 5)
+                    )
+                }
+
+                item {
+                    val item = SettingsSwitchItem(
+                        checked = settingsState.transparentWidgets,
+                        icon = Res.drawable.clear,
+                        label = Res.string.transparent_widgets,
+                        description = Res.string.transparent_widgets_desc,
+                        onClick = { onAction(SettingsAction.SaveTransparentWidgets(it)) }
+                    )
+                    SegmentedListItem(
                         onClick = { item.onClick(!item.checked) },
                         leadingContent = {
                             Icon(painterResource(item.icon), contentDescription = null)
@@ -260,7 +302,7 @@ fun AppearanceSettings(
                         },
                         colors = listItemColors,
                         enabled = isPlus,
-                        shapes = segmentedListItemShapes(3, 4)
+                        shapes = segmentedListItemShapes(4, 5)
                     )
                 }
 
